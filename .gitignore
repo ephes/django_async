@@ -1,0 +1,82 @@
+*.py[cod]
+__pycache__
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+htmlcov
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+# Pycharm/Intellij
+.idea
+
+# Complexity
+output/*.html
+output/*/index.html
+
+# Sphinx
+docs/_build
+
+# environmen
+.env
+
+# gitignore
+.gitignore.swp
+
+# django files
+CACHE
+cast_images
+cast_videos
+django_cast.egg-info
+
+# domis hints for development
+hints/*
+
+# vscode
+.vscode/*
+*.code-workspace
+
+# vim
+.*swp
+.*swo
+
+# pypi
+.pypirc
+
+# pyenv
+.python-version
+
+# tmp media
+tests/media/
+
+# local database
+db.sqlite3
