@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import test_get
+from .views import test_get, test_async_get
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("foobar/", test_get),
+    path("async_foobar/", test_async_get),
 ]
