@@ -7,7 +7,7 @@ fine. And since all asgi servers I tried behave the same, I assume it's
 a misunderstanding on my side. But nevertheless I'd like to understand
 what's going on here.
 
-# How to Reproduce
+# Steps to Reproduce
 
 ## Install Poetry and Setup Project
 ```shell
