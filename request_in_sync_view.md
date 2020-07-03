@@ -46,8 +46,19 @@ async def async_api_view(request):
 
 
 def sync_aggregation_view(request):
+    # this should work, but does not
     responses = []
     r = httpx.get("http://127.0.0.1:8000/sync_api_view/")
+    responses.append(r.json())
+    result = {"responses": responses}
+    return JsonResponse(result)
+
+
+async def async_aggregation_from_sync_view(request):
+    # ok, but this is working
+    responses = []
+    async with httpx.AsyncClient() as client:
+        r = await client.get("http://127.0.0.1:8000/sync_api_view/")
     responses.append(r.json())
     result = {"responses": responses}
     return JsonResponse(result)
