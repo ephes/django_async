@@ -58,6 +58,7 @@ def sync_api_view(request):
 ```
 
 But getting json from a sync api view does not work in uvicorn  while working in standard dev server.
+uvicorn just returns a 500 with 
 ```
 import httpx
 
@@ -68,4 +69,10 @@ def sync_aggregation(request):
     responses.append(r.json())
     result = {"responses": responses}
     return JsonResponse(result)
+```
+
+uvicorn just returns a 500 with 
+```
+Exception Type: ReadTimeout at /sync_aggregation/
+Exception Value: timed out
 ```
