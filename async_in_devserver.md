@@ -62,3 +62,8 @@ urlpatterns = [
     path("async/aggregate_sync_api/", views.aggregate_sync_api),
 ]
 ```
+
+And now, to my surprise, this just works:
+```shell
+open localhost:8000/async/aggregate_sync_api/
+```
