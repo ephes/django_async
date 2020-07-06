@@ -2,6 +2,15 @@
 
 In Django 3.1 it's possible have real async views.
 
+# Why not Threads
+
+> But non-trivial multi-threaded programs are incomprehensible to
+> humans. It is true that the programming model can be improved through the use of design patterns, better granularity of atomicity (e.g. > transactions), improved languages, and formal methods.
+> However, these techniques merely chip away at the unnecessarily enormous nondeterminism of the
+> threading model. The model remains intrinsically intractable.
+
+[The Problem with Threads](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-1.pdf)
+
 # Example Project
 
 ## Install Poetry and Setup Project
@@ -38,7 +47,7 @@ def api(request):
 
 async def aggregate_sync_view(request):
     # start server like this:
-    # uvicorn --workers 10 django_async.asgi:application
+    # uvicorn --workers 10 mysite.asgi:application
     print("locals: ", locals())
     responses = []
     url = "http://127.0.0.1:8000/sync/api/"
