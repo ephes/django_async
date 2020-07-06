@@ -1,4 +1,4 @@
-# Django 3.1 Async Views Working in development server?
+# Django 3.1 Async Views Working in Development Server?
 
 Seems that async views are working without having to start servers
 like uvicorn.
