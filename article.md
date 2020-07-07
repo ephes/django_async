@@ -2,14 +2,14 @@
 
 In Django 3.1 it's possible have real async views.
 
-# Why not Threads
+# Why
 
-> But non-trivial multi-threaded programs are incomprehensible to
-> humans. It is true that the programming model can be improved through the use of design patterns, better granularity of atomicity (e.g. > transactions), improved languages, and formal methods.
-> However, these techniques merely chip away at the unnecessarily enormous nondeterminism of the
-> threading model. The model remains intrinsically intractable.
+* Handling long-lived network connections like Websockets.
+* Long-lived HTTP connections and server sent events.
+* Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
+* Parallelizing outgoing HTTP requests or other high latency I/O.
 
-[The Problem with Threads](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-1.pdf)
+https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism?utm_campaign=Django%2BNewsletter&utm_medium=web&utm_source=Django_Newsletter_30
 
 # Example Project
 
@@ -17,7 +17,7 @@ In Django 3.1 it's possible have real async views.
 ```shell
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 mkdir mysite && cd mysite && poetry init -n
-poetry add django==3.1b1 uvicorn httpx
+poetry add django==3.1b1 httpx
 poetry shell  # switch to virtualenv created by poetry, I have to use a new shell, dunny why
 ```
 
@@ -35,51 +35,29 @@ Edit mysite/views.py to look like this:
 import time
 import httpx
 import asyncio
-import concurrent.futures
 
 from django.http import JsonResponse
 
+
 def api(request):
     time.sleep(1)
-    payload = {"hello": "world"}
+    payload = {"message": "Hello World!", "task_id": request.GET.get("task_id")}
     return JsonResponse(payload)
 
 
-async def aggregate_sync_view(request):
-    # start server like this:
-    # uvicorn --workers 10 mysite.asgi:application
-    print("locals: ", locals())
+async def api_aggregated(request):
     responses = []
-    url = "http://127.0.0.1:8000/sync/api/"
-    urls = [url for _ in range(10)]
+    base_url = "http://127.0.0.1:8000/sync/api/"
+    urls = [f"{base_url}?task_id={task_id}" for task_id in range(10)]
     s = time.perf_counter()
     async with httpx.AsyncClient() as client:
         responses = await asyncio.gather(*[client.get(url) for url in urls])
         responses = [r.json() for r in responses]
     elapsed = time.perf_counter() - s
-    print(f"fetch executed in {elapsed:0.2f} seconds.")
-    result = {"responses": responses}
-    return JsonResponse(result)
-
-
-def threadpool_aggregation(request):
-    num_iterations = 10
-    sync_api_url = "http://localhost:8000/sync/api/"
-    results = []
-    urls = [sync_api_url for i in range(1, 1 + num_iterations)]
-    s = time.perf_counter()
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_url = {executor.submit(httpx.get, url): url for url in urls}
-        for future in concurrent.futures.as_completed(future_to_url):
-            url = future_to_url[future]
-            try:
-                r = future.result()
-                results.append(r.json())
-            except Exception as exc:
-                print('%r generated an exception: %s' % (url, exc))
-    elapsed = time.perf_counter() - s
-    print(f"fetch executed in {elapsed:0.2f} seconds.")
-    result = {"responses": results}
+    result = {
+        "responses": responses,
+        "debug_message": f"fetch executed in {elapsed:0.2f} seconds."
+    }
     return JsonResponse(result)
 ```
 
@@ -91,6 +69,9 @@ from . import views
 
 urlpatterns = [
     path("sync/api/", views.api),
-    path("async/aggregate_sync_view/", views.aggregate_sync_view),
+    path("async/api_aggregated/", views.api_aggregated),
 ]
 ```
+
+You can check it's working by pointing your browser at [sync_api](http://localhost:8000/sync/api)
+and [async_aggregation](http://localhost:8000/async/api_aggregated/)
