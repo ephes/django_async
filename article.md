@@ -4,7 +4,25 @@ Async support for Django is on it's way for quite some time now. Since
 [version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support) there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. There was not much improvements from using asgi for
 the end user though. The only thing you could do was to have the handler handle multiple file uploads in an async matter, since file uploads don't reach the view layer which is not async in Django 3.0.
 
-In Django 3.1 it's possible have real async views.
+In Django 3.1 it will be possible have real async views. That opens up a lot of interesting opportunities.
+
+# Threads vs Async
+
+> Concurrency is about dealing with lots of things at once.
+> Parallelism is about doing lots of things at once. Not the same,
+> but related. One is about structure, one is about execution.
+> Concurrency provides a way to structure a solution to solve
+> a problem that may (but not necessarily) be parallelizable.
+> 
+> — Rob Pike Co-inventor of the Go language
+
+If we talk about Django async support we almost always mean concurrency
+and not parallelism. Yes, we are answering requests in parallel if
+we run a webserver with multiple worker processes, but usually our
+application server takes care of this and we don't have to worry
+about this stuff as application developers.
+
+All our problems are io-bound.
 
 # Why
 
