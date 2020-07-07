@@ -1,5 +1,9 @@
 # Django 3.1 Async Views
 
+Async support for Django is on it's way for quite some time now. Since
+[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support) there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. There was not much improvements from using asgi for
+the end user though. The only thing you could do was to have the handler handle multiple file uploads in an async matter, since file uploads don't reach the view layer which is not async in Django 3.0.
+
 In Django 3.1 it's possible have real async views.
 
 # Why
