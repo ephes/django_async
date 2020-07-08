@@ -3,10 +3,13 @@
 * [Andrew Godwin – Django & Async](https://www.youtube.com/watch?v=M_ENwEB5UUk&t=2s)
 * [DjangoCon 2019 - Just Add Await: Retrofitting Async Into Django by Andrew Godwin](https://www.youtube.com/watch?v=d9BAUBEyFgM)
 
-# Podcasts
+# Podcast Episodes
 * [Django's Async Future - Tom Christie
 ](https://djangochat.com/episodes/django-async-future-tom-christie)
 * [Async Django - Andrew Godwin](https://djangochat.com/episodes/async-django-andrew-godwin)
+
+# Threads
+* [Unyielding](https://glyph.twistedmatrix.com/2014/02/unyielding.html)
 
 # Memory Usage
 * 8MB stack size for threads is only virtual memory [post 1](https://unix.stackexchange.com/questions/473416/why-on-modern-linux-the-default-stack-size-is-so-huge-8mb-even-10-on-some-di?noredirect=1&lq=1) [post 2](https://unix.stackexchange.com/questions/127602/default-stack-size-for-pthreads?noredirect=1&lq=1)
