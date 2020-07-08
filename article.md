@@ -24,6 +24,10 @@ about this stuff as application developers.
 
 All our problems are io-bound.
 
+# Points
+
+* GIL gets released automaticall on io context switch
+
 # Why
 
 * Handling long-lived network connections like Websockets.

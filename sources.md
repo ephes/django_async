@@ -1,3 +1,3 @@
 # Memory Usage
 * 8MB stack size for threads is only virtual memory [post 1](https://unix.stackexchange.com/questions/473416/why-on-modern-linux-the-default-stack-size-is-so-huge-8mb-even-10-on-some-di?noredirect=1&lq=1) [post 2](https://unix.stackexchange.com/questions/127602/default-stack-size-for-pthreads?noredirect=1&lq=1)
-* ulimit -s [threads memory usage](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
+* ulimit -s [threads memory usage](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/) good article
