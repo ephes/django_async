@@ -8,6 +8,11 @@
 ](https://djangochat.com/episodes/django-async-future-tom-christie)
 * [Async Django - Andrew Godwin](https://djangochat.com/episodes/async-django-andrew-godwin)
 
+# Youtube Videos
+* [Elixir Phoenix Liveview / Twitter](https://youtu.be/MZvmYaFkNJI)
+* [Elixir Phoenix Liveview / Basketball](https://youtu.be/U_Pe8Ru06fM)
+* [ElixirConf Keynote Liveview](https://youtu.be/txk4WAlabvI)
+
 # Threads
 * [Unyielding](https://glyph.twistedmatrix.com/2014/02/unyielding.html)
 
