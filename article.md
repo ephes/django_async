@@ -146,11 +146,27 @@ This yields about the same performance as the threading solution.
 
 ## Theads vs Async
 
-All our problems are io-bound.
+Ok, threads and async both seem to be fine, so which one should
+be used? It depends.
+
+### Multitasking
+
+Doing things concurrently means we would like to do some kind of
+multitasking. When we are creating threads to achieve this, we
+employ a form of preemptive multitasking, because the operating
+system kernel has to decide which thread get's interrupted when
+and which other thread is scheduled to run now. In multithreading
+control switches between threads all the time and even if one
+thread gets stuck it probably wont affect other running threads
+much.
+
+In the async world, on the other hand, we have a form of cooperative
+multitasking where the application code itself gets to decide when
+it yields control back to other tasks. Which also means that
+if a async task blocks, it blocks all other tasks too.
 
 # Points
 
-* GIL gets released automaticall on io context switch
 * Trio got rid of futures
 * Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
 * With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
