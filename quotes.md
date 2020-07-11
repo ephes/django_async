@@ -1,10 +1,11 @@
 # Quotes
 
-> The people bashing threads are typically system programmers which have in mind
-> use cases that the typical application programmer will never encounter in her
-> life. […] In 99% of the use cases an application programmer is likely to run
-> into, the simple pattern of spawning a bunch of independent threads and collecting
-> the results in a queue is everything one needs to know.[148]
+> The people bashing threads are typically system programmers which have
+> in mind use cases that the typical application programmer will never 
+> encounter in her life. […] In 99% of the use cases an application 
+> programmer is likely to run into, the simple pattern of spawning a
+> bunch of independent threads and collecting the results in a queue is 
+> everything one needs to know.[148]
 > 
 > — Michele Simionato Python deep thinker“ 
 Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. 
@@ -15,9 +16,10 @@ Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books.
 >  — David Beazley Python coach and mad scientist“
 > Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. 
 
-> „Python threads are great at doing nothing.”[151]“
+> „Python threads are great at doing nothing.”
+>   — David Beazley Python coach and mad scientist
 > 
-> Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. 
+> Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. [151]
 
 > Concurrency is about dealing with lots of things at once.
 > Parallelism is about doing lots of things at once.
