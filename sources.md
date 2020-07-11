@@ -29,6 +29,7 @@
 * [Django Async Documentation](https://docs.djangoproject.com/en/3.1/topics/async/)
 * [Async DEP](https://github.com/django/deps/blob/master/accepted/0009-async.rst)
 * [What's new in Django 3.1](https://learndjango.com/tutorials/whats-new-django-31?utm_campaign=Django%2BNewsletter&utm_medium=web&utm_source=Django_Newsletter_31)
+* [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/)
 
 # ASGI
 * [ASGI Documentation](https://asgi.readthedocs.io/en/latest/)
