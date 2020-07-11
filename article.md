@@ -65,11 +65,11 @@ different set of tradeoffs.
 > 
 >   — David Beazley Python coach and mad scientist
 
-### Sync Requests
-Being contraint by the GIL does not mean we couldn't do things
-concurrently in a single Python process. If we want to fetch data
-from five different api endpoints, for example, we could do it like
-this:
+Maybe it's time for an example. Being contraint by the
+GIL does not mean we couldn't do things concurrently in
+a single Python process. Let's say we want to fetch
+information about five star wars characters from an external
+api. At first we build a list of urls we want to retrieve:
 
 ```python
 import time
@@ -79,7 +79,13 @@ base_url = "https://swapi.dev/api/people"
 urls = []
 for character_id in range(1, 6):
     urls.append(f"{base_url}/{character_id}/")
+```
 
+### Sync Requests
+Now we have to fetch those urls. The first thing that comes
+to mind is to just use sync requests.
+
+```python
 s = time.perf_counter()
 for url in urls:
     r = httpx.get(url)
