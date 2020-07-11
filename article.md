@@ -46,7 +46,9 @@ All our problems are io-bound.
 # Points
 
 * GIL gets released automaticall on io context switch
-* Trio 
+* Trio got rid of futures
+* Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
+* With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
 
 # Why
 
