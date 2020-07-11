@@ -59,6 +59,84 @@ performance (what most users should care about, since most software
 is not multithreaded) and unpredictable latency. It's just a
 different set of tradeoffs.
 
+## Concurrent I/O
+
+> Python threads are great at doing nothing.
+> 
+>   — David Beazley
+
+### Sync Requests
+Being contraint by the GIL does not mean we couldn't do things
+concurrently in a single Python process. If we want to fetch data
+from five different api endpoints, for example, we could do it like
+this:
+
+```python
+import time
+import httpx
+
+base_url = "https://swapi.dev/api/people"
+urls = []
+for character_id in range(1, 6):
+    urls.append(f"{base_url}/{character_id}/")
+
+s = time.perf_counter()
+for url in urls:
+    r = httpx.get(url)
+    print(r.json()["name"])
+elapsed = time.perf_counter() - s
+print(f"fetch executed in {elapsed:0.2f} seconds.")
+```
+
+This takes for about 0.35s on my machine. But most of the
+time the code is just waiting for swapi.dev to answer the
+http get requests. And while it's waiting, nothing else is
+happening. Each request takes about 70ms and therefor it
+takes 350ms to complete all five requests.
+
+### Multithreading
+Can we do better?
+```python
+import concurrent.futures
+
+s = time.perf_counter()
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    future_to_url = {executor.submit(httpx.get, url): url for url in urls}
+    for future in concurrent.futures.as_completed(future_to_url):
+        url = future_to_url[future]
+        try:
+            r = future.result()
+            print(r.json()["name"])
+        except Exception as exc:
+            print('%r generated an exception: %s' % (url, exc))
+elapsed = time.perf_counter() - s
+print(f"fetch executed in {elapsed:0.2f} seconds.")
+```
+Much better - this only takes about 140ms. Instead of waiting for
+each request to complete, we just fire up a new thread for each url
+and wait until they all have completed. Now the time it takes to
+complete all requests is not sum(all_requests) but abs(slowest_request).
+Why does this work? Doesn't the GIL prevent us from doing things in
+parallel? Yes, but the GIL is automatically released when a thread
+blocks on I/O.
+
+### Async
+Now there's another option to multiplex I/O without creating operating
+system threads. We could use the relatively new async function syntax
+and asyncio to fetch those urls concurrently:
+
+```python
+import asyncio
+
+s = time.perf_counter()
+async with httpx.AsyncClient() as client:
+    responses = await asyncio.gather(*[client.get(url) for url in urls])
+    for r in responses:
+        print(r.json()["name"])
+elapsed = time.perf_counter() - s
+print(f"fetch executed in {elapsed:0.2f} seconds.")
+```
+This yields about the same performance as the threading solution.
 
 ## Theads vs Async
 
