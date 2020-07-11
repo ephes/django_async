@@ -36,10 +36,29 @@ In August 2020 [Django 3.1 will be released](https://learndjango.com/tutorials/w
 > — Rob Pike Co-inventor of the Go language
 
 If we talk about Django async support we almost always mean concurrency
-and not parallelism. Yes, it's possible for webservers powered by Django
-to process multiple requests in parallel. But those requests will usually
+and not parallelism. Yes, it's possible for Django powered webservers 
+to process multiple requests in parallel. But those requests will
 be running in different worker processes and their interactions usually
-take place in the databases which uses transactions for isolation.
+only take place in the databases which uses transactions for isolation.
+
+## GIL
+
+While in other languages it might be possible that one operating
+system process does multiple things on different CPUs in parallel,
+in python it's not, because of the infamous
+[GIL](https://www.dabeaz.com/python/UnderstandingGIL.pdf). Contrary
+to popular belief this is not a unique feature of Python, but also
+present in Ruby, NodeJS and PHP. All those languages use reference
+counting for memory management and it's impossible
+([or nearly impossible](https://lwn.net/Articles/689548/)) to use
+reference counting without something like a GIL without being at
+least an order of magnitute slower. Java for example uses a
+different kind of automatic memory management and therefore has no
+need for a GIL. But Java has to pay a price in slower single thread
+performance (what most users should care about, since most software
+is not multithreaded) and unpredictable latency. It's just a
+different set of tradeoffs.
+
 
 ## Theads vs Async
 
