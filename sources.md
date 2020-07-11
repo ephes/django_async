@@ -43,8 +43,6 @@
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
 
-
-
 # Overview Articles
 * [Tom Christie on python async frameworks](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism)
 
