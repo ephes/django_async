@@ -165,11 +165,25 @@ multitasking where the application code itself gets to decide when
 it yields control back to other tasks. Which also means that
 if a async task blocks, it blocks all other tasks too.
 
-### Ressources
+### Scalability
 
 It's often said that thread are not as scalable as async tasks,
 because they tend to use more memory or hog the CPU because of
-all the context switches they are causing.
+all the context switches they are causing. I'm at least a bit
+sceptical about such claims. Under investigation they often turn
+out to be not true or not true anymore. The default stack size
+for a new thread on linux and macOS (`ulimit -s`) is 8MB. But
+that doesn't mean this is the real memory overhead of a thread.
+First off, it's virtual memory and not resident, and second -
+yes, while this imposed a hard and low limit on the number of
+threads on 32bit machines (usable virtual memory is only 3GB),
+on 64bit machines this limit is no longer relevant. Here's an
+article describing that 
+[running 10k threads](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
+should be not a big problem on current hardware.
+
+Async tasks only take about 1KB memory and are more or less just
+one function call. Ok, that's hard to beat.
 
 # Points
 
