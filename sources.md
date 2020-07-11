@@ -54,5 +54,9 @@
 # Benchmarks
 * [Techempower](https://www.techempower.com/benchmarks/)
 
+# Books
+* [Effective Python](https://effectivepython.com/)
+* [Fluent Python](https://www.oreilly.com/library/view/fluent-python/9781491946237/)
+
 # Bugs found
 * [many threads -> kernel panic](https://feedbackassistant.apple.com/feedback/7862123)
