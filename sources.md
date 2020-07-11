@@ -8,6 +8,7 @@
 ](https://djangochat.com/episodes/django-async-future-tom-christie)
 * [Async Django - Andrew Godwin](https://djangochat.com/episodes/async-django-andrew-godwin)
 * [Episode #167: Simplifying Python's Async with Trio](https://talkpython.fm/episodes/show/167/simplifying-pythons-async-with-trio)
+* [Django, Channels, And The Asynchronous Web with Andrew Godwin](https://dev.to/podcast__init__/django-channels-and-the-asynchronous-web-with-andrew-godwin)
 
 # Youtube Videos
 * [Elixir Phoenix Liveview / Twitter](https://youtu.be/MZvmYaFkNJI)
@@ -26,10 +27,10 @@
 
 # Django Async
 
-* [Django Async Documentation](https://docs.djangoproject.com/en/3.1/topics/async/)
+* [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap)
 * [Async DEP](https://github.com/django/deps/blob/master/accepted/0009-async.rst)
-* [What's new in Django 3.1](https://learndjango.com/tutorials/whats-new-django-31?utm_campaign=Django%2BNewsletter&utm_medium=web&utm_source=Django_Newsletter_31)
-* [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/)
+* [Django Async Documentation](https://docs.djangoproject.com/en/3.1/topics/async/)
+* [What's new in Django 3.1](https://learndjango.com/tutorials/whats-new-django-31)
 
 # ASGI
 * [ASGI Documentation](https://asgi.readthedocs.io/en/latest/)
@@ -37,7 +38,7 @@
 
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
-* 
+
 
 
 # Overview Articles
