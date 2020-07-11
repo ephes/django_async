@@ -14,6 +14,10 @@
 * [Elixir Phoenix Liveview / Twitter](https://youtu.be/MZvmYaFkNJI)
 * [Elixir Phoenix Liveview / Basketball](https://youtu.be/U_Pe8Ru06fM)
 * [ElixirConf Keynote Liveview](https://youtu.be/txk4WAlabvI)
+* [import asyncio: Learn Python's AsyncIO #1 - The Async Ecosystem](https://youtu.be/Xbl7XjFYsN4)
+* [import asyncio: Learn Python's AsyncIO #2 - The Event Loop](https://youtu.be/E7Yn5biBZ58)
+* [import asyncio: Learn Python's AsyncIO #3 - Using Coroutines](https://youtu.be/-CzqsgaXUM8)
+* [import asyncio: Learn Python's AsyncIO #4 - Coroutines Under The Hood](https://youtu.be/1LTHbmed3D4)
 
 # Elixir Phoenix
 * [Demos Phrenzy](https://phoenixphrenzy.com/results)
