@@ -185,6 +185,35 @@ should be not a big problem on current hardware.
 Async tasks only take about 1KB memory and are more or less just
 one function call. Ok, that's hard to beat.
 
+### Difficulty
+
+> Concurrency: one of the most difficult topics in computer science
+> (usually best avoided).
+> 
+>  — David Beazley Python coach and mad scientist
+
+Concurrent programs are more difficult to write than normal ones.
+But getting multithreaded programs right is especially difficult.
+Since task switching can happen any time, it's really hard to
+find out where things did go wrong. Let's say you have one thread
+which is responsible for moving money between bank accounts. If
+it gets interrupted while in the midst of transferring money from
+a to b maybe the money was added to account b, but not yet deleted
+from account a. It's now possible for another thread to move the
+same money from a to c which was already added to b. That's not good.
+Therefore you have to be careful to protect shared ressources with
+locks or use other mechanisms to avoid those situations. So the
+default case for multithreading is that control can switch at any
+point in the code except for those parts that were explicitly
+protected by locks. 
+
+Async programs seem to be more easy to reason about because they
+do it the other way around. The default case in an async task is
+that there's no way other tasks are getting control at a random
+line. All lines where control could be transferred to another task
+are explicitly marked with `await`. So the number of points where
+things can go wrong in a hard to debug way is a lot lower.
+
 # Points
 
 * Trio got rid of futures
