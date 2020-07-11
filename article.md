@@ -8,7 +8,7 @@ In Django 3.1 it will be possible have async middlewares, async tests and real a
 
 ## Django Async History
 
-Five/Six years ago Andrew Godwin after working on migrations for Django started the [channels](https://github.com/django/channels/) project. It's about adding support for non http protocols (websockets/webrtc) to Django.
+Five/Six years ago Andrew Godwin, after working on migrations, for Django started the [channels](https://github.com/django/channels/) project. It's about adding support for non http protocols (WebSockets/WebRTC/MQTT) to Django.
 
 About two years ago Andrew Godwin proposed
 [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/) to bring async functionality to Django. Since Version 2.1 Django
@@ -25,7 +25,7 @@ End of 2019 [Django 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/) wa
 
 In August 2020 [Django 3.1 will be released](https://learndjango.com/tutorials/whats-new-django-31) which will include support for async middlewares, async testing and finally async views.
 
-# Threads vs Async
+# Concurrency
 
 > Concurrency is about dealing with lots of things at once.
 > Parallelism is about doing lots of things at once. Not the same,
@@ -36,10 +36,12 @@ In August 2020 [Django 3.1 will be released](https://learndjango.com/tutorials/w
 > — Rob Pike Co-inventor of the Go language
 
 If we talk about Django async support we almost always mean concurrency
-and not parallelism. Yes, we are answering requests in parallel if
-we run a webserver with multiple worker processes, but usually our
-application server takes care of this and we don't have to worry
-about this stuff as application developers.
+and not parallelism. Yes, it's possible for webservers powered by Django
+to process multiple requests in parallel. But those requests will usually
+be running in different worker processes and their interactions usually
+take place in the databases which uses transactions for isolation.
+
+## Theads vs Async
 
 All our problems are io-bound.
 
@@ -49,6 +51,7 @@ All our problems are io-bound.
 * Trio got rid of futures
 * Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
 * With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
+* Daphne (channels 1) was running on twisted, now you can use any asgi server
 
 # Why
 
