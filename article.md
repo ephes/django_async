@@ -165,6 +165,12 @@ multitasking where the application code itself gets to decide when
 it yields control back to other tasks. Which also means that
 if a async task blocks, it blocks all other tasks too.
 
+### Ressources
+
+It's often said that thread are not as scalable as async tasks,
+because they tend to use more memory or hog the CPU because of
+all the context switches they are causing.
+
 # Points
 
 * Trio got rid of futures
