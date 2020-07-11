@@ -1,10 +1,29 @@
-# Django 3.1 Async Views
+# Django 3.1 Async
 
 Async support for Django is on it's way for quite some time now. Since
 [version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support) there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. There was not much improvements from using asgi for
 the end user though. The only thing you could do was to have the handler handle multiple file uploads in an async matter, since file uploads don't reach the view layer which is not async in Django 3.0.
 
-In Django 3.1 it will be possible have real async views. That opens up a lot of interesting opportunities.
+In Django 3.1 it will be possible have async middlewares, async tests and real async views. That opens up a lot of interesting opportunities.
+
+## Django Async History
+
+Five/Six years ago Andrew Godwin after working on migrations for Django started the [channels](https://github.com/django/channels/) project. It's about adding support for non http protocols (websockets/webrtc) to Django.
+
+About two years ago Andrew Godwin proposed
+[A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/) to bring async functionality to Django. Since Version 2.1 Django
+would only support Python 3.5 and up which includes native syntax/support
+for coroutines (async def). For Django > 3 it's even Python 3.6
+upwards. Adding async support for Django while it was still supporting
+Python 2 would have made no sense at all.
+
+One year ago, [DEP 0009: Async-capable Django](https://github.com/django/deps/blob/master/accepted/0009-async.rst) was [approved](https://groups.google.com/forum/#!msg/django-developers/5CVsR9FSqmg/UiswdhLECAAJ) by the technical board.
+It's already a pretty detailed plan on how to move Django from sync-only to
+native async with sync wrapper.
+
+End of 2019 [Django 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/) was released adding support for ASGI.
+
+In August 2020 [Django 3.1 will be released](https://learndjango.com/tutorials/whats-new-django-31) which will include support for async middlewares, async testing and finally async views.
 
 # Threads vs Async
 
@@ -27,6 +46,7 @@ All our problems are io-bound.
 # Points
 
 * GIL gets released automaticall on io context switch
+* Trio 
 
 # Why
 
