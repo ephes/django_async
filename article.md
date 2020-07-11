@@ -63,7 +63,7 @@ different set of tradeoffs.
 
 > Python threads are great at doing nothing.
 > 
->   — David Beazley
+>   — David Beazley Python coach and mad scientist
 
 ### Sync Requests
 Being contraint by the GIL does not mean we couldn't do things
