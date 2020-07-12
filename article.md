@@ -217,17 +217,30 @@ Async programs are more easy to reason about because they do it the
 other way around. The default case in an async task is that there's
 no way other tasks are getting control at a random line. All lines
 where control could be transferred to another task are explicitly
-marked with `await`. So the number of points where things can go wrong
-in a hard to debug way is a lot lower.
+marked with `await`. So the number of points where things can go
+wrong in a hard to debug way is a lot lower. Tom Christie brought
+up an interesting analogy in an
+[article about async](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism). He said that
+having `async` and `await` keywords is a bit like using explicitly
+enforced typing in Python. It's harder to write, but you are also
+more precise about what your code is doing.
 
-
+But even as async programs are a easier to write as multithreaded
+ones, there's still a fundemental problem. [](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
 
 # Points
 
 * Trio got rid of futures
 * Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
 * With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
+
+# From Tom Christies article
 * Daphne (channels 1) was running on twisted, now you can use any asgi server
+* Handling long-lived network connections like Websockets.
+* Long-lived HTTP connections and server sent events.
+* Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
+* Parallelizing outgoing HTTP requests or other high latency I/O.
+
 
 # Why
 
