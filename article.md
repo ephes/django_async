@@ -83,7 +83,7 @@ for character_id in range(1, 6):
 
 ### Sync Requests
 Now we have to fetch those urls. The first thing that comes
-to mind is to just use sync requests.
+to mind is to just use normal requests.
 
 ```python
 s = time.perf_counter()
@@ -124,7 +124,9 @@ and wait until they all have completed. Now the time it takes to
 complete all requests is not sum(all_requests) but abs(slowest_request).
 Why does this work? Doesn't the GIL prevent us from doing things in
 parallel? Yes, but the GIL is automatically released when a thread
-blocks on I/O.
+blocks on I/O. So this doesn't speed up the code we have written,
+but it's running more efficently because we spend less time sitting
+around doing nothing.
 
 ### Async
 Now there's another option to multiplex I/O without creating operating
@@ -143,6 +145,10 @@ elapsed = time.perf_counter() - s
 print(f"fetch executed in {elapsed:0.2f} seconds.")
 ```
 This yields about the same performance as the threading solution.
+Note that you have to use asyncio.gather. Just calling
+`await client.get(url)` in the for loop wouldn't work.
+[Waiting in asyncio](https://hynek.me/articles/waiting-in-asyncio/)
+explains the different forms of waiting in asyncio.
 
 ## Theads vs Async
 
@@ -207,12 +213,14 @@ default case for multithreading is that control can switch at any
 point in the code except for those parts that were explicitly
 protected by locks. 
 
-Async programs seem to be more easy to reason about because they
-do it the other way around. The default case in an async task is
-that there's no way other tasks are getting control at a random
-line. All lines where control could be transferred to another task
-are explicitly marked with `await`. So the number of points where
-things can go wrong in a hard to debug way is a lot lower.
+Async programs are more easy to reason about because they do it the
+other way around. The default case in an async task is that there's
+no way other tasks are getting control at a random line. All lines
+where control could be transferred to another task are explicitly
+marked with `await`. So the number of points where things can go wrong
+in a hard to debug way is a lot lower.
+
+
 
 # Points
 
