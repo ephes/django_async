@@ -389,3 +389,11 @@ Using more workers will fix this:
 uvicorn --workers 11 mysite.asgi:application
 ```
 
+Or we could change our sync api view into an async one:
+
+```python
+async def api(request):
+    await asyncio.sleep(1)
+    payload = {"message": "Hello Async World!", "task_id": request.GET.get("task_id")}
+    return JsonResponse(payload)
+```
