@@ -1,5 +1,5 @@
 # Talks
-* [Tom Christie | DjangoCon 2019 - Sketching out a Django redesign](https://www.youtube.com/watch?v=u8GSFEg5lnU&t=1s)
+* [Tom Christie | DjangoCon 2019 - Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU)
 * [Andrew Godwin – Django & Async](https://www.youtube.com/watch?v=M_ENwEB5UUk&t=2s)
 * [DjangoCon 2019 - Just Add Await: Retrofitting Async Into Django by Andrew Godwin](https://www.youtube.com/watch?v=d9BAUBEyFgM)
 * [asyncio in Practice: We Did It Wrong](https://www.roguelynn.com/talks/asyncio-in-practice/) | [Tutorial] (https://www.roguelynn.com/words/asyncio-we-did-it-wrong/)
