@@ -45,6 +45,7 @@
 
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
+* [Trio](https://trio.readthedocs.io/en/stable/)
 
 # Asyncio
 * [Waiting in asyncio](https://hynek.me/articles/waiting-in-asyncio/)
@@ -68,6 +69,10 @@
 # Django
 * [Django REST framework](https://www.django-rest-framework.org/)
 * [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/)
+
+# Python
+* [Stackless Python](https://github.com/stackless-dev/stackless/wiki)
+* [CPython](https://www.python.org/)
 
 # Bugs found
 * [many threads -> kernel panic](https://feedbackassistant.apple.com/feedback/7862123)
