@@ -11,7 +11,7 @@ In Django 3.1 it will be possible have async middlewares, async tests and real a
 The main motivation to support async in Django comes from the observation
 that there are use cases for massive concurrent applications and that we
 don't want to switch languages to support those use cases, as
-[Tom Christie said in a talk on DjangoCon 2019](https://youtu.be/u8GSFEg5lnU).
+Tom Christie explained in [his DjangoCon 2019 talk](https://youtu.be/u8GSFEg5lnU).
 And while NodeJS web frameworks might maybe not up on parity with Django or
 Ruby on Rails feature wise, you at least don't have to switch to languages
 like go or Erlang if you encounter an use case for a concurrent application
@@ -36,6 +36,16 @@ Smaller examples:
 * Reactive async based [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/)
 * Reactive dashboard showing things like currently active connections, requests per second etc
 * Reactive frontend for [Django REST framework](https://www.django-rest-framework.org/)
+
+Other stuff:
+
+* Daphne (channels 1) was running on twisted, now you can use any asgi server
+* Handling long-lived network connections like Websockets.
+* Long-lived HTTP connections and server sent events.
+* Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
+* Parallelizing outgoing HTTP requests or other high latency I/O.
+
+[Tom Christie on python async frameworks](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism)
 
 ## Django Async History
 
@@ -274,28 +284,17 @@ about flow control, because both are
 [Trio](https://trio.readthedocs.io/en/stable/) is a new approach
 to tackle this problem using nurseries and getting in result rid
 of concepts like Futures, Deferreds or Promises. It has an obsessive
-focus on usability and correctness.
+focus on usability and correctness. Unfortunately Trio is necessarily
+incompatible with asyncio introducing an ecosystem-split.
+
+## Other Approches
+
+* Callbacks (NodeJS until recently)
 
 # Points
 
 * python 2 check was after 100 ticks (sys.setcheckinterval)
 * python 3 is after 5ms (sys.setswitchinterval)
-
-# From Tom Christies article
-* Daphne (channels 1) was running on twisted, now you can use any asgi server
-* Handling long-lived network connections like Websockets.
-* Long-lived HTTP connections and server sent events.
-* Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
-* Parallelizing outgoing HTTP requests or other high latency I/O.
-
-# Why
-
-* Handling long-lived network connections like Websockets.
-* Long-lived HTTP connections and server sent events.
-* Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
-* Parallelizing outgoing HTTP requests or other high latency I/O.
-
-https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism?utm_campaign=Django%2BNewsletter&utm_medium=web&utm_source=Django_Newsletter_30
 
 # Example Project
 
