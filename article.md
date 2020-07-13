@@ -364,3 +364,28 @@ urlpatterns = [
 
 You can check it's working by pointing your browser at [sync_api](http://localhost:8000/sync/api)
 and [async_aggregation](http://localhost:8000/async/api_aggregated/)
+
+## WSGI vs ASGI
+
+This works, but the development server still runs in WSGI mode.
+To use ASGI you have to install an ASGI capable webserver and use
+a different application.
+
+```shell
+poetry add uvicorn
+uvicorn mysite.asgi:application
+```
+
+And while the simple sync view works as expected, we now get a
+timeout error trying to access the
+[async_aggregation](http://localhost:8000/async/api_aggregated/)
+view. Thats because since sync views are blocking a worker from
+answering other requests concurrently and the only worker is busy
+answering the aggregation view, trying to fetch the sync view from
+the aggregation view blocks both and raises an error after timeout.
+Using more workers will fix this:
+
+```shell
+uvicorn --workers 11 mysite.asgi:application
+```
+
