@@ -12,9 +12,30 @@ The main motivation to support async in Django comes from the observation
 that there are use cases for massive concurrent applications and that we
 don't want to switch languages to support those use cases, as
 [Tom Christie said in a talk on DangoCon 2019](https://youtu.be/u8GSFEg5lnU).
-And while NodeJS web frameworks are not up to parity with Django or
-Ruby on Rails feature wise, they are in fact a viable alternative to
-switching to languages like go or Erlang. 
+And while NodeJS web frameworks might maybe not up on parity with Django or
+Ruby on Rails feature wise, you at least don't have to switch to languages
+like go or Erlang if you encounter an use case for a concurrent application
+using NodeJS.
+
+You have an use case for a concurrent application if you have to manage
+a lot of simultaneous active connections. Here are some examples:
+
+* MMO games (one used stackless python for serializable threads)
+* Chat services (if you want to implement something like slack)
+* ...
+
+But even use cases where you don't need that kind of scalability could
+profit much. Think of the kind of applications listed on the
+[Phoenix Phrenzy results](https://phoenixphrenzy.com/results)
+page. [Phoenix Liveview](https://youtu.be/MZvmYaFkNJI)) is a really
+cool feature and it would be really cool to be able to do the
+same with Django (although with [channels](https://channels.readthedocs.io/en/latest/) it should be already possible to do something similar).
+
+Smaller examples:
+
+* Reactive async based Django-Admin
+* Reactive dashboard showing things like currently active connections, requests per second etc
+* Reactive frontend for [Django REST framework](https://www.django-rest-framework.org/)
 
 ## Django Async History
 
