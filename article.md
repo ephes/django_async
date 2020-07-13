@@ -6,6 +6,16 @@ the end user though. The only thing you could do was to have the handler handle 
 
 In Django 3.1 it will be possible have async middlewares, async tests and real async views. That opens up a lot of interesting opportunities.
 
+# Motivation
+
+The main motivation to support async in Django comes from the observation
+that there are use cases for massive concurrent applications and that we
+don't want to switch languages to support those use cases, as
+[Tom Christie said in a talk on DangoCon 2019](https://youtu.be/u8GSFEg5lnU).
+And while NodeJS web frameworks are not up to parity with Django or
+Ruby on Rails feature wise, they are in fact a viable alternative to
+switching to languages like go or Erlang. 
+
 ## Django Async History
 
 Five/Six years ago Andrew Godwin, after working on migrations, for Django started the [channels](https://github.com/django/channels/) project. It's about adding support for non http protocols (WebSockets/WebRTC/MQTT) to Django.
@@ -230,9 +240,12 @@ ones, there's still a fundemental problem. [](https://vorpus.org/blog/notes-on-s
 
 # Points
 
+* Using threads is the simplest way to do blocking I/O in parallel with minimal changes to your program
 * Trio got rid of futures
 * Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
 * With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
+* python 2 check was after 100 ticks (sys.setcheckinterval)
+* python 3 is after 5ms (sys.setswitchinterval)
 
 # From Tom Christies article
 * Daphne (channels 1) was running on twisted, now you can use any asgi server
@@ -240,7 +253,6 @@ ones, there's still a fundemental problem. [](https://vorpus.org/blog/notes-on-s
 * Long-lived HTTP connections and server sent events.
 * Dealing with background tasks without necessarily needing a full blown task queue subcomponent.
 * Parallelizing outgoing HTTP requests or other high latency I/O.
-
 
 # Why
 
