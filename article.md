@@ -469,3 +469,5 @@ Then run the test using django-admin:
 ```shell
 python manage.py test
 ```
+
+# Async adapter functions

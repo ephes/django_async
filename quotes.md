@@ -17,6 +17,7 @@ Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books.
 > Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. 
 
 > „Python threads are great at doing nothing.”
+> 
 >   — David Beazley Python coach and mad scientist
 > 
 > Auszug aus: Luciano Ramalho. „Fluent Python.“ Apple Books. [151]
