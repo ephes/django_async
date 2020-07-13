@@ -319,7 +319,7 @@ python manage.py runserver          # should start the development server now
 
 ## Create some Views
 
-Edit mysite/views.py to look like this:
+Edit `mysite/views.py` to look like this:
 ```python
 import time
 import httpx
@@ -350,20 +350,20 @@ async def api_aggregated(request):
     return JsonResponse(result)
 ```
 
-And mysite/urls.py like this:
+And `mysite/urls.py` like this:
 ```python
 from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    path("sync/api/", views.api),
-    path("async/api_aggregated/", views.api_aggregated),
+    path("api/", views.api),
+    path("api_aggregated/", views.api_aggregated),
 ]
 ```
 
-You can check it's working by pointing your browser at [sync_api](http://localhost:8000/sync/api)
-and [async_aggregation](http://localhost:8000/async/api_aggregated/)
+You can check it's working by pointing your browser at [sync_api](http://localhost:8000/api)
+and [async_aggregation](http://localhost:8000/api_aggregated/)
 
 ## WSGI vs ASGI
 
@@ -378,7 +378,7 @@ uvicorn mysite.asgi:application
 
 And while the simple sync view works as expected, we now get a
 timeout error trying to access the
-[async_aggregation](http://localhost:8000/async/api_aggregated/)
+[async_aggregation](http://localhost:8000/api_aggregated/)
 view. Thats because since sync views are blocking a worker from
 answering other requests concurrently and the only worker is busy
 answering the aggregation view, trying to fetch the sync view from
@@ -448,3 +448,24 @@ MIDDLEWARE = [
 ```
 
 # Async Tests
+
+Add a simple test for our api view in `mysite/test_views.py`:
+```python
+from django.test import AsyncRequestFactory, SimpleTestCase
+
+from .views import api
+
+
+class TestApiView(SimpleTestCase):
+    factory = AsyncRequestFactory()
+
+    async def test_api(self):
+        request = self.factory.get("sync/api/")
+        response = await api(request)
+        self.assertEqual(response.status_code, 200)
+```
+
+Then run the test using django-admin:
+```shell
+python manage.py test
+```
