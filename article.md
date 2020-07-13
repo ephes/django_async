@@ -232,6 +232,15 @@ should be not a big problem on current hardware.
 Async tasks only take about 1KB memory and are more or less just
 one function call. Ok, that's hard to beat.
 
+Threads also did suffer from a lock contention problem on Python 2.
+The Python interpreter checked every 100 ticks if another thread
+should be able to acquire the GIL. This leads to slower performance
+even on a single CPU, but on on machines with multiple cores this
+was especially bad, because now threads would be fighting on
+different CPUs in parallel about getting the GIL. Those issues were
+fixed with the new GIL introduces in Python 3.2 and now check gets
+only called every 5ms (it's configurable via sys.setswitchinterval).
+
 ### Concurrency is Hard
 
 > Concurrency: one of the most difficult topics in computer science
@@ -287,14 +296,9 @@ of concepts like Futures, Deferreds or Promises. It has an obsessive
 focus on usability and correctness. Unfortunately Trio is necessarily
 incompatible with asyncio introducing an ecosystem-split.
 
-## Other Approches
+### Other Approches
 
-* Callbacks (NodeJS until recently)
-
-# Points
-
-* python 2 check was after 100 ticks (sys.setcheckinterval)
-* python 3 is after 5ms (sys.setswitchinterval)
+* Callbacks (NodeJS until recently) [Callback Hell](http://callbackhell.com/)
 
 # Example Project
 
