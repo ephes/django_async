@@ -227,7 +227,9 @@ threads on 32bit machines (usable virtual memory is only 3GB),
 on 64bit machines this limit is no longer relevant. Here's an
 article describing that 
 [running 10k threads](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
-should be not a big problem on current hardware.
+should be not a big problem on current hardware. But starting
+[10k threads](https://github.com/ephes/django_async/blob/master/measure_threads_memory.py) on macOS lead to a reproducable
+kernel panic.
 
 Async tasks only take about 1KB memory and are more or less just
 one function call. Ok, that's hard to beat.
