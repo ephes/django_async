@@ -397,3 +397,54 @@ async def api(request):
     payload = {"message": "Hello Async World!", "task_id": request.GET.get("task_id")}
     return JsonResponse(payload)
 ```
+
+# Async Middlewares
+
+Here's an example adding a middleware which supports both sync
+and async execution. Just add this to `mysite/middleware.py`:
+```python
+import json
+import time
+import asyncio
+
+from django.http import JsonResponse
+from django.utils.decorators import sync_and_async_middleware
+
+
+def add_elapsed_time(response, start):
+    data = json.loads(response.content)
+    data["elapsed"] = time.perf_counter() - start
+    response = JsonResponse(data)
+    return response
+
+
+@sync_and_async_middleware
+def timing_middleware(get_response):
+    if asyncio.iscoroutinefunction(get_response):
+        async def middleware(request):
+            start = time.perf_counter()
+            response = await get_response(request)
+            response = add_elapsed_time(response, start)
+            return response
+
+    else:
+        def middleware(request):
+            start = time.perf_counter()
+            response = get_response(request)
+            response = add_elapsed_time(response, start)
+            return response
+
+    return middleware
+```
+This middleware just add an elapsed field to every json response
+to record the duration of each request.
+
+You have to add this middleware than to mysite/settings.py:
+```python
+MIDDLEWARE = [
+    ...
+    "mysite.middleware.timing_middleware",
+]
+```
+
+# Async Tests
