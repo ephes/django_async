@@ -1,7 +1,7 @@
 # Django 3.1 Async
 
 Async support for Django is on it's way for quite some time now. Since
-[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support) there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. There was not much improvements from using asgi for
+[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support) there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. There was not much improvements from using ASGI for
 the end user though. The only thing you could do was to have the handler handle multiple file uploads in an async matter, since file uploads don't reach the view layer which is not async in Django 3.0.
 
 In Django 3.1 it will be possible have async middlewares, async tests and real async views. That opens up a lot of interesting opportunities.
@@ -11,7 +11,7 @@ In Django 3.1 it will be possible have async middlewares, async tests and real a
 The main motivation to support async in Django comes from the observation
 that there are use cases for massive concurrent applications and that we
 don't want to switch languages to support those use cases, as
-[Tom Christie said in a talk on DangoCon 2019](https://youtu.be/u8GSFEg5lnU).
+[Tom Christie said in a talk on DjangoCon 2019](https://youtu.be/u8GSFEg5lnU).
 And while NodeJS web frameworks might maybe not up on parity with Django or
 Ruby on Rails feature wise, you at least don't have to switch to languages
 like go or Erlang if you encounter an use case for a concurrent application
@@ -20,7 +20,7 @@ using NodeJS.
 You have an use case for a concurrent application if you have to manage
 a lot of simultaneous active connections. Here are some examples:
 
-* MMO games (one used stackless python for serializable threads)
+* MMO games ([Eve Online](https://www.eveonline.com/) used [Stackless Python](https://github.com/stackless-dev/stackless/wiki) for serializable threads -> write a thread to the database and resume later..)
 * Chat services (if you want to implement something like slack)
 * ...
 
@@ -33,7 +33,7 @@ same with Django (although with [channels](https://channels.readthedocs.io/en/la
 
 Smaller examples:
 
-* Reactive async based Django-Admin
+* Reactive async based [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/)
 * Reactive dashboard showing things like currently active connections, requests per second etc
 * Reactive frontend for [Django REST framework](https://www.django-rest-framework.org/)
 
@@ -83,7 +83,7 @@ present in Ruby, NodeJS and PHP. All those languages use reference
 counting for memory management and it's impossible
 ([or nearly impossible](https://lwn.net/Articles/689548/)) to use
 reference counting without something like a GIL without being at
-least an order of magnitute slower. Java for example uses a
+least an order of magnitude slower. Java for example uses a
 different kind of automatic memory management and therefore has no
 need for a GIL. But Java has to pay a price in slower single thread
 performance (what most users should care about, since most software
@@ -96,7 +96,7 @@ different set of tradeoffs.
 > 
 >   — David Beazley Python coach and mad scientist
 
-Maybe it's time for an example. Being contraint by the
+Maybe it's time for an example. Being constraint by the
 GIL does not mean we couldn't do things concurrently in
 a single Python process. Let's say we want to fetch
 information about five star wars characters from an external
@@ -156,7 +156,7 @@ complete all requests is not sum(all_requests) but abs(slowest_request).
 Why does this work? Doesn't the GIL prevent us from doing things in
 parallel? Yes, but the GIL is automatically released when a thread
 blocks on I/O. So this doesn't speed up the code we have written,
-but it's running more efficently because we spend less time sitting
+but it's running more efficiently because we spend less time sitting
 around doing nothing.
 
 ### Async
@@ -191,7 +191,7 @@ be used? It depends.
 Doing things concurrently means we would like to do some kind of
 multitasking. When we are creating threads to achieve this, we
 employ a form of preemptive multitasking, because the operating
-system kernel has to decide which thread get's interrupted when
+system kernel has to decide which thread gets interrupted when
 and which other thread is scheduled to run now. In multithreading
 control switches between threads all the time and even if one
 thread gets stuck it probably wont affect other running threads
@@ -207,7 +207,7 @@ if a async task blocks, it blocks all other tasks too.
 It's often said that thread are not as scalable as async tasks,
 because they tend to use more memory or hog the CPU because of
 all the context switches they are causing. I'm at least a bit
-sceptical about such claims. Under investigation they often turn
+skeptical about such claims. Under investigation they often turn
 out to be not true or not true anymore. The default stack size
 for a new thread on linux and macOS (`ulimit -s`) is 8MB. But
 that doesn't mean this is the real memory overhead of a thread.
@@ -222,7 +222,7 @@ should be not a big problem on current hardware.
 Async tasks only take about 1KB memory and are more or less just
 one function call. Ok, that's hard to beat.
 
-### Difficulty
+### Concurrency is Hard
 
 > Concurrency: one of the most difficult topics in computer science
 > (usually best avoided).
@@ -231,6 +231,10 @@ one function call. Ok, that's hard to beat.
 
 Concurrent programs are more difficult to write than normal ones.
 But getting multithreaded programs right is especially difficult.
+
+
+#### Threads
+
 Since task switching can happen any time, it's really hard to
 find out where things did go wrong. Let's say you have one thread
 which is responsible for moving money between bank accounts. If
@@ -238,11 +242,13 @@ it gets interrupted while in the midst of transferring money from
 a to b maybe the money was added to account b, but not yet deleted
 from account a. It's now possible for another thread to move the
 same money from a to c which was already added to b. That's not good.
-Therefore you have to be careful to protect shared ressources with
+Therefore you have to be careful to protect shared resources with
 locks or use other mechanisms to avoid those situations. So the
 default case for multithreading is that control can switch at any
 point in the code except for those parts that were explicitly
-protected by locks. 
+protected by locks.
+
+#### Async
 
 Async programs are more easy to reason about because they do it the
 other way around. The default case in an async task is that there's
@@ -256,15 +262,21 @@ having `async` and `await` keywords is a bit like using explicitly
 enforced typing in Python. It's harder to write, but you are also
 more precise about what your code is doing.
 
-But even as async programs are a easier to write as multithreaded
-ones, there's still a fundemental problem. [](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
+#### Trio
+
+But even if async programs are a easier to write as multithreaded
+ones, there's still a fundamental problem. Regardless of using
+threads or async tasks it's pretty difficult to do local reasoning
+about flow control, because both are
+[frighteningly similar to goto](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/).
+[Trio](https://trio.readthedocs.io/en/stable/) is a new approach
+to tackle this problem using nurseries and getting in result rid
+of concepts like Futures, Deferreds or Promises. It has an obsessive
+focus on usability and correctness.
 
 # Points
 
 * Using threads is the simplest way to do blocking I/O in parallel with minimal changes to your program
-* Trio got rid of futures
-* Traditional approaches to handle concurrent programming tend to be frightingly similar to goto
-* With threads, you usually have to be careful about shared ressources and lock accordingly because of preemptive multitasking can take over control at every moment. With async all code is "locked" by default and you explicitly mark those parts of the code where other stuff can happen (await)
 * python 2 check was after 100 ticks (sys.setcheckinterval)
 * python 3 is after 5ms (sys.setswitchinterval)
 
@@ -291,7 +303,7 @@ https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalis
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 mkdir mysite && cd mysite && poetry init -n
 poetry add django==3.1b1 httpx
-poetry shell  # switch to virtualenv created by poetry, I have to use a new shell, dunny why
+poetry shell  # switch to virtualenv created by poetry, I have to use a new shell, dunno why
 ```
 
 ## Initialize Django
