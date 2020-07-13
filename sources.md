@@ -21,8 +21,9 @@
 * [import asyncio: Learn Python's AsyncIO #3 - Using Coroutines](https://youtu.be/-CzqsgaXUM8)
 * [import asyncio: Learn Python's AsyncIO #4 - Coroutines Under The Hood](https://youtu.be/1LTHbmed3D4)
 
-# Elixir Phoenix
+# Examples
 * [Demos Phrenzy](https://phoenixphrenzy.com/results)
+* [Eve Online](https://www.eveonline.com/)
 
 # Threads
 * [Unyielding](https://glyph.twistedmatrix.com/2014/02/unyielding.html)
@@ -63,6 +64,10 @@
 # Books
 * [Effective Python](https://effectivepython.com/)
 * [Fluent Python](https://www.oreilly.com/library/view/fluent-python/9781491946237/)
+
+# Django
+* [Django REST framework](https://www.django-rest-framework.org/)
+* [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/)
 
 # Bugs found
 * [many threads -> kernel panic](https://feedbackassistant.apple.com/feedback/7862123)
