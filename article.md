@@ -232,31 +232,33 @@ one function call. Ok, that's hard to beat.
 Concurrent programs are more difficult to write than normal ones.
 But getting multithreaded programs right is especially difficult.
 
-
 #### Threads
 
 Since task switching can happen any time, it's really hard to
 find out where things did go wrong. Let's say you have one thread
 which is responsible for moving money between bank accounts. If
 it gets interrupted while in the midst of transferring money from
-a to b maybe the money was added to account b, but not yet deleted
-from account a. It's now possible for another thread to move the
-same money from a to c which was already added to b. That's not good.
-Therefore you have to be careful to protect shared resources with
-locks or use other mechanisms to avoid those situations. So the
-default case for multithreading is that control can switch at any
-point in the code except for those parts that were explicitly
-protected by locks.
+account A to B. Maybe the money was added to account B, but not
+yet deleted from account A. It's now possible for another thread
+to move the same money from A to C which was already added to B.
+That's not good. Therefore you have to be careful to protect
+shared resources with locks or use other mechanisms to avoid
+those situations. So the default case for multithreading is that
+control can switch at any point in the code except for those parts
+that were explicitly protected by locks.
+
+Having said that, using threads is probably the simplest way to
+do blocking I/O in parallel with minimal changes to your application.
 
 #### Async
 
-Async programs are more easy to reason about because they do it the
-other way around. The default case in an async task is that there's
-no way other tasks are getting control at a random line. All lines
-where control could be transferred to another task are explicitly
-marked with `await`. So the number of points where things can go
-wrong in a hard to debug way is a lot lower. Tom Christie brought
-up an interesting analogy in an
+Async programs are more easy to reason about because they do
+concurrency the other way around. The default case in an async
+task is that there's no way other tasks are getting control at a
+random line. All lines where control could be transferred to another
+task are explicitly marked with `await`. So the number of points
+where things can go wrong in a hard to debug way is a lot lower.
+Tom Christie brought up an interesting analogy in an
 [article about async](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism). He said that
 having `async` and `await` keywords is a bit like using explicitly
 enforced typing in Python. It's harder to write, but you are also
@@ -276,7 +278,6 @@ focus on usability and correctness.
 
 # Points
 
-* Using threads is the simplest way to do blocking I/O in parallel with minimal changes to your program
 * python 2 check was after 100 ticks (sys.setcheckinterval)
 * python 3 is after 5ms (sys.setswitchinterval)
 
