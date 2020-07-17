@@ -228,8 +228,9 @@ on 64bit machines this limit is no longer relevant. Here's an
 article describing that 
 [running 10k threads](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
 should be not a big problem on current hardware. But starting
-[10k threads](https://github.com/ephes/django_async/blob/master/measure_threads_memory.py) on macOS lead to a reproducable
-kernel panic. Running this script under linux worked as expected.
+[10k threads](https://github.com/ephes/django_async/blob/master/measure_threads_memory.py)
+on macOS lead to a reproducible kernel panic. Running this script
+under linux worked as expected.
 
 Async tasks only take about 1KB memory and are more or less just
 one function call. Ok, that's hard to beat.
@@ -280,10 +281,10 @@ random line. All lines where control could be transferred to another
 task are explicitly marked with `await`. So the number of points
 where things can go wrong in a hard to debug way is a lot lower.
 Tom Christie brought up an interesting analogy in an
-[article about async](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism). He said that
-having `async` and `await` keywords is a bit like using explicitly
-enforced typing in Python. It's harder to write, but you are also
-more precise about what your code is doing.
+[article about async](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism).
+He said that having `async` and `await` keywords is a bit like using
+explicitly enforced typing in Python. It's harder to write, but you are
+also more precise about what your code is doing.
 
 #### Trio
 
@@ -297,6 +298,10 @@ to tackle this problem using nurseries and getting in result rid
 of concepts like Futures, Deferreds or Promises. It has an obsessive
 focus on usability and correctness. Unfortunately Trio is necessarily
 incompatible with asyncio introducing an ecosystem-split.
+
+#### Curio
+
+Trio was based on [Curio](https://github.com/dabeaz/curio)
 
 ### Other Approches
 

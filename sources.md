@@ -47,6 +47,9 @@
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
 * [Trio](https://trio.readthedocs.io/en/stable/)
 
+# Curio
+* [Curio](https://github.com/dabeaz/curio)
+
 # Asyncio
 * [Waiting in asyncio](https://hynek.me/articles/waiting-in-asyncio/)
 
