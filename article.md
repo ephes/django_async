@@ -309,6 +309,10 @@ Trio was based on [Curio](https://github.com/dabeaz/curio)
 
 # Example Project
 
+There are lot of options in the python ecosystem on how to setup
+a virtualenv and install the required packages, but I'm choosing
+poetry here, simply because it's the most convenient one.
+
 ## Install Poetry and Setup Project
 ```shell
 curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
