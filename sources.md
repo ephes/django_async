@@ -76,6 +76,7 @@
 # Python
 * [Stackless Python](https://github.com/stackless-dev/stackless/wiki)
 * [CPython](https://www.python.org/)
+* [Poetry](https://python-poetry.org/docs/)
 
 # Bugs found
 * [many threads -> kernel panic](https://feedbackassistant.apple.com/feedback/7862123)
