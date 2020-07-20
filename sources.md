@@ -78,5 +78,8 @@
 * [CPython](https://www.python.org/)
 * [Poetry](https://python-poetry.org/docs/)
 
+# Browsers
+* [Firefox](https://firefox.org/)
+
 # Bugs found
 * [many threads -> kernel panic](https://feedbackassistant.apple.com/feedback/7862123)
