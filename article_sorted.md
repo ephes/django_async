@@ -47,7 +47,8 @@ environment variable. This happens to me all the time.
 First we create a synchronous view named returning a simple JsonResponse, just
 like we would have done it in previous Django versions. It takes an optional
 parameter `task_id` which we'll later use to identify the url which was called
-from the second view.
+from the second view. It also sleeps for a second emulating a response that
+takes some time to be build.
 
 Edit `mysite/views.py` to look like this:
 ```python
@@ -81,7 +82,11 @@ Now you should be able to see the response of little api view in your
 little bit nicer there, but any browser will do. This is not at all different
 from a normal synchronous api view in Django before 3.1.
 
-Ok, let's add an asynchronous view then. Add this async dev view to
+Ok, let's add an asynchronous view then. We are creating a view that builds ten
+different urls pointing to our original sync view and aggregate their results in
+a new response.
+
+Add this async def view to
 `mysite/views.py`:
 ```python
 import httpx
@@ -107,15 +112,15 @@ async def api_aggregated(request):
 
 And a route to the new aggregated view to `mysite/urls.py`:
 ```python
-from django.urls import path
-
-from . import views
-
 urlpatterns = [
     path("api/sync/", views.api_sync),
     path("api/aggregated/", views.api_aggregated),
 ]
 ```
+
+Now you should be able to see the result of your first asynchronous view
+in your [browser](http://localhost:8000/api/aggregated/). 
+
 
 You can check it's working by pointing your browser at
 [sync_api](http://localhost:8000/api) and
