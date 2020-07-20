@@ -56,21 +56,40 @@ import time
 from django.http import JsonResponse
 
 
-def api(request):
+def api_sync(request):
     time.sleep(1)
-    payload = {"message": "Hello World!", "task_id": request.GET.get("task_id")}
+    payload = {"message": "Hello World!"}
+    if "task_id" in request.GET:
+        payload["task_id"] = request.GET["task_id"]
     return JsonResponse(payload)
 ```
 
+And then edit `mysite/urls.py`to look like this:
+```python
+from django.urls import path
 
+from . import views
 
+urlpatterns = [
+    path("api/sync/", views.api_sync),
+]
+```
+
+Now you should be able to see the response of little api view in your
+[browser](http://localhost:8000/api/sync/). I would recommend
+[Firefox](https://firefox.org/) to look at json responses because they look a
+little bit nicer there, but any browser will do. This is not at all different
+from a normal synchronous api view in Django before 3.1.
+
+Ok, let's add an asynchronous view then. Add this async dev view to
+`mysite/views.py`:
 ```python
 import httpx
 import asyncio
 
 async def api_aggregated(request):
     responses = []
-    base_url = "http://127.0.0.1:8000/api/"
+    base_url = "http://127.0.0.1:8000/api/sync/"
     urls = [f"{base_url}?task_id={task_id}" for task_id in range(10)]
     s = time.perf_counter()
     async with httpx.AsyncClient() as client:
@@ -79,20 +98,21 @@ async def api_aggregated(request):
     elapsed = time.perf_counter() - s
     print(responses)
     result = {
+        "message": "Hello Async World!",
         "responses": responses,
         "debug_message": f"fetch executed in {elapsed:0.2f} seconds.",
     }
     return JsonResponse(result)
 ```
 
-And `mysite/urls.py` like this:
+And a route to the new aggregated view to `mysite/urls.py`:
 ```python
 from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    path("api/", views.api),
+    path("api/sync/", views.api_sync),
     path("api/aggregated/", views.api_aggregated),
 ]
 ```
