@@ -168,3 +168,15 @@ very convenient, because we could now write async views inside our normal
 are already using and they'll just work. We even gain the benefit of being
 able to do things concurrently inside async views like fetching results from
 other api endpoints and aggregating them in a new response.
+
+What we won't get by running async views in a WSGI application is concurrency
+when calling the view from the outside. Since each async view runs in it's own
+thread, we'll still have as many threads as concurrent requests at a time. Ok
+let's install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and
+change the runserver command so that we are now running an ASGI instead of an
+WSGI application:
+
+```shell
+python -m pip install uvicorn
+uvicorn mysite.asgi:application
+```
