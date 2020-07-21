@@ -77,6 +77,7 @@
 * [Stackless Python](https://github.com/stackless-dev/stackless/wiki)
 * [CPython](https://www.python.org/)
 * [Poetry](https://python-poetry.org/docs/)
+* [event loop](https://docs.python.org/3/library/asyncio-eventloop.html)
 
 # Browsers
 * [Firefox](https://firefox.org/)
