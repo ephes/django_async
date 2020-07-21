@@ -42,6 +42,8 @@
 # ASGI
 * [ASGI Documentation](https://asgi.readthedocs.io/en/latest/)
 * [awesome ASGI](https://github.com/florimondmanca/awesome-asgi)
+* [WSGI](https://wsgi.readthedocs.io/en/latest/what.html)
+* [uvicorn](https://www.uvicorn.org/)
 
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
