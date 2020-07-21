@@ -60,7 +60,7 @@ import time
 from django.http import JsonResponse
 
 
-def api_sync(request):
+def api(request):
     time.sleep(1)
     payload = {"message": "Hello World!"}
     if "task_id" in request.GET:
@@ -94,18 +94,24 @@ Add this async def view to `mysite/views.py`:
 import httpx
 import asyncio
 
+
+def get_api_urls(num=10):
+    base_url = "http://127.0.0.1:8000/api/"
+    return [f"{base_url}?task_id={task_id}" for task_id in range(num)]
+
+
 async def api_aggregated(request):
-    responses = []
-    base_url = "http://127.0.0.1:8000/api/sync/"
-    urls = [f"{base_url}?task_id={task_id}" for task_id in range(10)]
     s = time.perf_counter()
+    responses = []
+    urls = get_api_urls(num=10)
     async with httpx.AsyncClient() as client:
         responses = await asyncio.gather(*[client.get(url) for url in urls])
         responses = [r.json() for r in responses]
     elapsed = time.perf_counter() - s
+    print(responses)
     result = {
         "message": "Hello Async World!",
-        "aggregated_responses": responses,
+        "responses": responses,
         "debug_message": f"fetch executed in {elapsed:0.2f} seconds.",
     }
     return JsonResponse(result)
@@ -114,7 +120,7 @@ async def api_aggregated(request):
 Add a route to the new aggregated view to `mysite/urls.py`:
 ```python
 urlpatterns = [
-    path("api/sync/", views.api_sync),
+    path("api/", views.api),
     path("api/aggregated/", views.api_aggregated),
 ]
 ```
@@ -131,10 +137,9 @@ our sync views concurrently by using `async def`, `async with` and the magic of
 We can check our assumptions by adding a sync aggregation view to `mysite/views.py`:
 ```python
 def api_aggregated_sync(request):
-    responses = []
-    base_url = "http://127.0.0.1:8000/api/sync/"
-    urls = [f"{base_url}?task_id={task_id}" for task_id in range(10)]
     s = time.perf_counter()
+    responses = []
+    urls = get_api_urls(num=10)
     for url in urls:
         r = httpx.get(url)
         responses.append(r.json())
@@ -150,7 +155,7 @@ def api_aggregated_sync(request):
 And also add a route to the sync aggregated view to `mysite/urls.py`:
 ```python
 urlpatterns = [
-    path("api/sync/", views.api_sync),
+    path("api/", views.api_sync),
     path("api/aggregated/", views.api_aggregated),
     path("api/aggregated/sync/", views.api_aggregated_sync),
 ]
@@ -188,4 +193,25 @@ normal. But if we try to open the
 timeout error. What is happening here? When the aggregated api view is called,
 it makes subsequent calls to ten sync api views. But uvicorn is a single
 threaded server by default. The main thread responsible for serving the async
-aggregation view is calling itself to answer the sync api view requests and ending up in a deadlock throwing an ReadTimeout after some time.
+aggregation view is calling itself to answer the sync api view requests creating
+a deadlock which is then resolved by throwing the ReadTimeout after some time.
+
+We can resolve this deadlock by allowing uvicorn to start more workers:
+
+```shell
+uvicorn --workers 10 mysite.asgi:application
+```
+
+Or more elegantly changing our sync api view into an async api view:
+```python
+async def api(request):
+    await asyncio.sleep(1)
+    payload = {"message": "Hello Async World!"}
+    if "task_id" in request.GET:
+        payload["task_id"] = request.GET["task_id"]
+    return JsonResponse(payload)
+```
+
+Note that you have to restart uvicorn to have your code changes take effect.
+A future version of the Django development server might include an ASGI so this would not be necessary. Or use [daphne](https://github.com/django/daphne) from
+the [Django Channels](https://channels.readthedocs.io/en/latest/) project.
