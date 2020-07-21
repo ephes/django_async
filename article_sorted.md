@@ -79,8 +79,8 @@ urlpatterns = [
 ]
 ```
 
-Now you should be able to see the response of little api view in your
-[browser](http://localhost:8000/api/sync/). I recommend
+Now you should be able to see the response of little
+[api view](http://localhost:8000/api/sync/) in your browser. I recommend
 [Firefox](https://firefox.org/) to look at json responses because they look a
 little bit nicer there, but any browser will do. This is not at all different
 from a normal synchronous api view in Django before 3.1.
@@ -174,10 +174,18 @@ What we won't get by running async views in a WSGI application is concurrency
 when calling the view from the outside. Since each async view runs in it's own
 thread, we'll still have as many threads as concurrent requests at a time. Ok
 let's install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and
-change the runserver command so that we are now running an ASGI instead of an
+change the runserver command so that we are now running an ASGI instead of a
 WSGI application:
 
 ```shell
 python -m pip install uvicorn
 uvicorn mysite.asgi:application
 ```
+
+Our normal [sync api view](http://localhost:8000/api/sync/) still works as
+normal. But if we try to open the
+[async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
+timeout error. What is happening here? When the aggregated api view is called,
+it makes subsequent calls to ten sync api views. But uvicorn is a single
+threaded server by default. The main thread responsible for serving the async
+aggregation view is calling itself to answer the sync api view requests and ending up in a deadlock throwing an ReadTimeout after some time.
