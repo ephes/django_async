@@ -212,6 +212,9 @@ async def api(request):
     return JsonResponse(payload)
 ```
 
-Note that you have to restart uvicorn to have your code changes take effect.
-A future version of the Django development server might include an ASGI so this would not be necessary. Or use [daphne](https://github.com/django/daphne) from
-the [Django Channels](https://channels.readthedocs.io/en/latest/) project.
+Note that you have to restart uvicorn to have your code changes take effect. A
+future version of the Django development server might include an ASGI capable so
+this would not be necessary. Or you could use
+[daphne](https://github.com/django/daphne) from the
+[Django Channels](https://channels.readthedocs.io/en/latest/) project which also
+does reload on code changes.
