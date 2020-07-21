@@ -1,20 +1,23 @@
 # Django 3.1 Async
 
-With this shiny new version, you can finally use asynchronous views, middlewares
-and tests in Django. You don't have to change anything when you don't want to
-use async views. In Django 3.1 all of your existing code will run without the
-need for any modification.
+With this new version, you can finally use asynchronous views, middlewares and
+tests in Django. You don't have to change anything when you don't want to use
+those async features. In Django 3.1 all of your existing code will run without
+need for modification.
 
-1. Small example on how to use views / middlewares / tests
+What to expect from this article?
+
+1. Small examples on how to use views / middlewares / tests
 2. What are async views good for
 3. Comparison with other techniques (multithreading etc)
 
 # Async View Example
 
 For this example you need a working installation of
-[Python](https://www.python.org/). Any version from 3.6 onwards should work, but
-I would recommend to use the latest 3.8 series, because since async is
-relatively new to Python new versions bring major improvements.
+[Python](https://www.python.org/). Any version from 3.6 onwards will do, but I
+recommend to use the latest 3.8 series, because async is relatively new to
+Python and new versions still bring major improvements in usability and
+stability.
 
 ## Create Virtualenv and Setup Project
 
@@ -27,7 +30,7 @@ builtin virtualenv module throughout this example.
 ```shell
 mkdir mysite && cd mysite
 python -m venv mysite_venv && source mysite_venv/bin/activate  
-python -m pip install django==3.1b1 httpx
+python -m pip install django==3.1rc1 httpx
 ```
 
 ## Initialize Django
@@ -77,7 +80,7 @@ urlpatterns = [
 ```
 
 Now you should be able to see the response of little api view in your
-[browser](http://localhost:8000/api/sync/). I would recommend
+[browser](http://localhost:8000/api/sync/). I recommend
 [Firefox](https://firefox.org/) to look at json responses because they look a
 little bit nicer there, but any browser will do. This is not at all different
 from a normal synchronous api view in Django before 3.1.
@@ -86,8 +89,7 @@ Ok, let's add an asynchronous view then. We are creating a view that builds ten
 different urls pointing to our original sync view and aggregate their results in
 a new response.
 
-Add this async def view to
-`mysite/views.py`:
+Add this async def view to `mysite/views.py`:
 ```python
 import httpx
 import asyncio
@@ -101,16 +103,15 @@ async def api_aggregated(request):
         responses = await asyncio.gather(*[client.get(url) for url in urls])
         responses = [r.json() for r in responses]
     elapsed = time.perf_counter() - s
-    print(responses)
     result = {
         "message": "Hello Async World!",
-        "responses": responses,
+        "aggregated_responses": responses,
         "debug_message": f"fetch executed in {elapsed:0.2f} seconds.",
     }
     return JsonResponse(result)
 ```
 
-And a route to the new aggregated view to `mysite/urls.py`:
+Add a route to the new aggregated view to `mysite/urls.py`:
 ```python
 urlpatterns = [
     path("api/sync/", views.api_sync),
@@ -118,10 +119,52 @@ urlpatterns = [
 ]
 ```
 
-Now you should be able to see the result of your first asynchronous view
-in your [browser](http://localhost:8000/api/aggregated/). 
+If you now point your browser to the
+[url](http://localhost:8000/api/aggregated/) of your aggregated view, you should
+be able to see your first result from an asynchronous function. If we would have
+used a normal sync and called `httpx.get(url)` in a for loop, this aggregation
+would have taken at least ten seconds, because every sync view sleeps for one
+second. But our async view also was done after about one second, so we must have
+called our sync views concurrently by using `async def`, `async with` and the magic of `asyncio.gather`. Great.
 
+We can check our assumptions by adding a sync aggregation view to `mysite/views.py`:
+```python
+def api_aggregated_sync(request):
+    responses = []
+    base_url = "http://127.0.0.1:8000/api/sync/"
+    urls = [f"{base_url}?task_id={task_id}" for task_id in range(10)]
+    s = time.perf_counter()
+    for url in urls:
+        r = httpx.get(url)
+        responses.append(r.json())
+    elapsed = time.perf_counter() - s
+    result = {
+        "message": "Hello Sync World!",
+        "aggregated_responses": responses,
+        "debug_message": f"fetch executed in {elapsed:0.2f} seconds.",
+    }
+    return JsonResponse(result)
+```
 
-You can check it's working by pointing your browser at
-[sync_api](http://localhost:8000/api) and
-[async_aggregation](http://localhost:8000/api_aggregated/).
+And also add a route to the sync aggregated view to `mysite/urls.py`:
+```python
+urlpatterns = [
+    path("api/sync/", views.api_sync),
+    path("api/aggregated/", views.api_aggregated),
+    path("api/aggregated/sync/", views.api_aggregated_sync),
+]
+```
+
+As expected, this
+[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) took at
+least ten seconds to finish. Fine. But how did this work? Note that we just used
+the normal builtin development server Django provides. Shouldn't we have to use
+some kind of [ASGI](https://asgi.readthedocs.io/en/latest/) server? Since we
+annotated our async view function with `aync def` Django is able to detect that
+we want to write an async view and runs our view in a thread with its own
+[event loop](https://docs.python.org/3/library/asyncio-eventloop.html). That's
+very convenient, because we could now write async views inside our normal
+[WSGI](https://wsgi.readthedocs.io/en/latest/what.html) Django applications we
+are already using and they'll just work. We even gain the benefit of being
+able to do things concurrently inside async views like fetching results from
+other api endpoints and aggregating them in a new response.
