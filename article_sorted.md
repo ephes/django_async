@@ -119,13 +119,14 @@ urlpatterns = [
 ]
 ```
 
-If you now point your browser to the
-[url](http://localhost:8000/api/aggregated/) of your aggregated view, you should
-be able to see your first result from an asynchronous function. If we would have
-used a normal sync and called `httpx.get(url)` in a for loop, this aggregation
-would have taken at least ten seconds, because every sync view sleeps for one
-second. But our async view also was done after about one second, so we must have
-called our sync views concurrently by using `async def`, `async with` and the magic of `asyncio.gather`. Great.
+If you now point your browser to the url of your
+[aggregated view](http://localhost:8000/api/aggregated/), you should be able to
+see your first result from an asynchronous function. If we would have used a
+normal sync and called `httpx.get(url)` in a for loop, this aggregation would
+have taken at least ten seconds, because every sync view sleeps for one second.
+But our async view also was done after about one second, so we must have called
+our sync views concurrently by using `async def`, `async with` and the magic of
+`asyncio.gather`. Great.
 
 We can check our assumptions by adding a sync aggregation view to `mysite/views.py`:
 ```python
