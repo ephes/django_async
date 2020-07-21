@@ -80,7 +80,7 @@ urlpatterns = [
 ```
 
 Now you should be able to see the response of little
-[api view](http://localhost:8000/api/sync/) in your browser. I recommend
+[api view](http://localhost:8000/api/) in your browser. I recommend
 [Firefox](https://firefox.org/) to look at json responses because they look a
 little bit nicer there, but any browser will do. This is not at all different
 from a normal synchronous api view in Django before 3.1.
@@ -187,7 +187,7 @@ python -m pip install uvicorn
 uvicorn mysite.asgi:application
 ```
 
-Our normal [sync api view](http://localhost:8000/api/sync/) still works as
+Our normal [sync api view](http://localhost:8000/api/) still works as
 normal. But if we try to open the
 [async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
 timeout error. What is happening here? When the aggregated api view is called,
