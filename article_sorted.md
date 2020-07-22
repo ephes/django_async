@@ -15,16 +15,16 @@ What to expect from this article?
 
 For this example you need a working installation of
 [Python](https://www.python.org/). Any version from 3.6 onwards will do, but I
-recommend to use the latest 3.8 series, because async is relatively new to
+recommend using the latest 3.8 series, because async is relatively new to
 Python and new versions still bring major improvements in usability and
 stability.
 
 ## Create Virtualenv and Setup Project
 
 Usually I prefer setting up new projects with
-Poetry](https://python-poetry.org/docs/) nowadays, but I understand that
-requiring people to curl install stuff makes them feel uncomfortable. And for
-this example there's not much of a difference anyway. Therefore I'll use the
+[Poetry](https://python-poetry.org/docs/) nowadays, but I understand that
+requiring people to curl install software makes them feel uncomfortable. And for
+this example it doesn't make a big difference anyway. Therefore I'll use the
 builtin virtualenv module throughout this example.
 
 ```shell
