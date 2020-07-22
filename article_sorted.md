@@ -180,16 +180,16 @@ What we won't get by running async views in a WSGI application is concurrency
 when calling the view from the outside. Since each async view runs in it's own
 thread, we'll still have as many threads as concurrent requests at a time. Ok
 let's install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and
-change the runserver command so that we are now running an ASGI instead of a
-WSGI application:
+change the runserver command so that we are now running Django as an ASGI rather
+than as a WSGI application:
 
 ```shell
 python -m pip install uvicorn
 uvicorn mysite.asgi:application
 ```
 
-Our normal [sync api view](http://localhost:8000/api/) still works as
-normal. But if we try to open the
+Our normal [sync api view](http://localhost:8000/api/) still works normally. But
+if we try to open the
 [async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
 timeout error. What is happening here? When the aggregated api view is called,
 it makes subsequent calls to ten sync api views. But uvicorn is a single
@@ -203,7 +203,9 @@ We can resolve this deadlock by allowing uvicorn to start more workers:
 uvicorn --workers 10 mysite.asgi:application
 ```
 
-Or more elegantly, changing our sync api view into an async api view:
+Or more elegantly, changing our sync api view into an async api view. You have
+to move the `import asyncio` line to the top of the file, if you haven't done
+this already:
 ```python
 async def api(request):
     await asyncio.sleep(1)
@@ -214,9 +216,41 @@ async def api(request):
 ```
 
 Note that you have to restart uvicorn to have your code changes take effect. A
-future version of the Django development server might include an ASGI capable so
-this would not be necessary. Or you could use
+future version of the Django development server might include an ASGI capable
+version so this would not be necessary. Or you could use
 [daphne](https://github.com/django/daphne) from the
 [Django Channels](https://channels.readthedocs.io/en/latest/) project which also
-does reload on code changes.
+does reload on code changes. Ok, now our
+[async aggregated view](http://localhost:8000/api/aggregated/) should work
+again.
 
+# Async Tests
+
+Not that we able to build async views, it would be really nice to be able to
+test them asynchronously, too. Async test cases inherit from Djangos normal
+TestCase base class. But you have to mark async test methods as `async def` to
+be able to `await` responses. In addition to the synchronous Django test client
+there's now an AsyncClient. 
+
+To add a simple test for our api view edit `mysite/test_views.py`:
+```python
+from django.test import TestCase
+from django.test import AsyncClient
+
+
+class TestApiWithClient(TestCase):
+    async def test_api_with_async_client(self):
+        client = AsyncClient()
+        response = await client.get("/api/", HTTP_ACCEPT="application/json")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual("Hello Async World!", data["message"])
+```
+
+Then run the test using django-admin:
+```shell
+python manage.py test
+```
+
+If you don't want to use a full http client, there's an AsyncRequestFactory,
+too.
