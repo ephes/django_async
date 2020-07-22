@@ -7,7 +7,7 @@ need for modification.
 
 What to expect from this article?
 
-1. Small examples on how to use views / middlewares / tests
+1. Small example on how to use async views, middlewares and tests
 2. What are async views good for
 3. Comparison with other techniques (multithreading etc)
 
@@ -191,7 +191,7 @@ thread, we'll still have as many threads as concurrent requests at a time.
 
 ### ASGI Example
 
-To try out an async example that concurrently callable from the outside, let's
+To try out an async example that's concurrently callable from the outside, let's
 install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and change
 the runserver command so that we are now running Django as an ASGI rather than
 as a WSGI application:
@@ -322,3 +322,5 @@ You can check with your [async api view](http://localhost:8000/api/) and
 [sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) (you now
 really have to increase the number of workers, otherwise you'll run into an
 timeout) that your new middleware works in both cases.
+
+# 
