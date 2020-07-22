@@ -224,7 +224,7 @@ does reload on code changes. Ok, now our
 [async aggregated view](http://localhost:8000/api/aggregated/) should work
 again.
 
-# Async Tests
+# Async Test Example
 
 Not that we able to build async views, it would be really nice to be able to
 test them asynchronously, too. Async test cases inherit from Djangos normal
