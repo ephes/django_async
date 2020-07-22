@@ -254,3 +254,57 @@ python manage.py test
 
 If you don't want to use a full http client, there's an AsyncRequestFactory,
 too.
+
+# Async Middleware Example
+
+Here's an example adding a middleware which supports both sync
+and async execution. Just add this to `mysite/middleware.py`:
+```python
+import json
+import time
+import asyncio
+
+from django.http import JsonResponse
+from django.utils.decorators import sync_and_async_middleware
+
+
+def add_elapsed_time(response, start):
+    data = json.loads(response.content)
+    data["elapsed"] = time.perf_counter() - start
+    response = JsonResponse(data)
+    return response
+
+
+@sync_and_async_middleware
+def timing_middleware(get_response):
+    if asyncio.iscoroutinefunction(get_response):
+        async def middleware(request):
+            start = time.perf_counter()
+            response = await get_response(request)
+            response = add_elapsed_time(response, start)
+            return response
+
+    else:
+        def middleware(request):
+            start = time.perf_counter()
+            response = get_response(request)
+            response = add_elapsed_time(response, start)
+            return response
+
+    return middleware
+```
+This middleware just add an elapsed field to every json response
+to record the duration of each request.
+
+To take effect, you also have to add this middleware to `mysite/settings.py`:
+```python
+MIDDLEWARE = [
+    ...
+    "mysite.middleware.timing_middleware",
+]
+```
+
+You can check with your [async api view](http://localhost:8000/api/) and
+[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) (you now
+really have to increase the number of workers, otherwise you'll run into an
+timeout) that your new middleware works in both cases.
