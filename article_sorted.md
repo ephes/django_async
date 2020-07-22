@@ -323,4 +323,16 @@ You can check with your [async api view](http://localhost:8000/api/) and
 really have to increase the number of workers, otherwise you'll run into an
 timeout) that your new middleware works in both cases.
 
-# 
+# Why Async Views
+
+Async support for Django is on it's way for quite some time now. Since
+[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
+there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. But
+there was not much benefit for end users though. The only thing you could do
+concurrently were file uploads, since uploads don't reach the view layer which
+was not async capable in Django 3.0.
+
+The main motivation to support async in Django comes from the observation that
+there are use cases for massive concurrent applications and that we don't want
+to switch languages to support those use cases, as Tom Christie explained in
+[his DjangoCon 2019 talk](https://youtu.be/u8GSFEg5lnU).
