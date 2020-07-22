@@ -47,11 +47,11 @@ environment variable. This happens to me all the time.
 
 ## Create some Views
 
-First we create a synchronous view named returning a simple JsonResponse, just
-like we would have done it in previous Django versions. It takes an optional
-parameter `task_id` which we'll later use to identify the url which was called
-from the second view. It also sleeps for a second emulating a response that
-takes some time to be build.
+First we create a synchronous view returning a simple JsonResponse, just like we
+would have done it in previous Django versions. It takes an optional parameter
+`task_id` which we'll later use to identify the url which was called from the
+second view. It also sleeps for a second emulating a response that takes some
+time to be build.
 
 Edit `mysite/views.py` to look like this:
 ```python
@@ -85,11 +85,13 @@ Now you should be able to see the response of little
 little bit nicer there, but any browser will do. This is not at all different
 from a normal synchronous api view in Django before 3.1.
 
+### Async Aggregation View
+
 Ok, let's add an asynchronous view then. We are creating a view that builds ten
 different urls pointing to our original sync view and aggregate their results in
 a new response.
 
-Add this async def view to `mysite/views.py`:
+Add this code to `mysite/views.py` and move the imports to the top of the file:
 ```python
 import httpx
 import asyncio
@@ -116,7 +118,7 @@ async def api_aggregated(request):
     return JsonResponse(result)
 ```
 
-Add a route to the new aggregated view to `mysite/urls.py`:
+Add a route to our new view to `mysite/urls.py`:
 ```python
 urlpatterns = [
     path("api/", views.api),
@@ -129,10 +131,13 @@ If you now point your browser to the url of your
 see your first result from an asynchronous function. A normal sync view calling
 `httpx.get(url)` in a for loop would have taken at least ten seconds to
 complete, because every api view sleeps for one second and they would have been
-called one after another and their latencies are just summing up. But our async
-view took only about one second to complete, so we must have called our sync
-views concurrently by using `async def`, `async with` and the magic of
+called one after another summing up their latencies. But our async view took
+only about one second to complete, so we must have called our sync views
+concurrently by using `async def`, `async with` and the magic of
 `asyncio.gather`. Great.
+
+
+### Compare  with Sync View
 
 We can check our hypothesis by adding a plain sync aggregation view to `mysite/views.py`:
 ```python
@@ -163,39 +168,48 @@ urlpatterns = [
 
 As expected, this
 [sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) takes now at
-least ten seconds to finish. Fine. But how did this work? Note that we just used
-the normal builtin development server Django provides. Shouldn't we have to use
-some kind of [ASGI](https://asgi.readthedocs.io/en/latest/) server?
+least ten seconds to finish. Fine.
 
-Since we annotated our async view function with `aync def` Django is able to
+### Why Did it Work?
+
+But how did our async aggregation view work? Note that we just used the normal
+builtin development server Django provides. Shouldn't we have to use some kind
+of [ASGI](https://asgi.readthedocs.io/en/latest/) server?
+
+Since we annotated our async view function with `async def` Django is able to
 detect that we want to write an async view and runs our view in a thread within
 its own [event loop](https://docs.python.org/3/library/asyncio-eventloop.html).
 That's very convenient, because we could now write async views inside the normal
 [WSGI](https://wsgi.readthedocs.io/en/latest/what.html) Django applications we
-are already using and they'll just work. We even gain the benefit of being able
-to do things concurrently inside async views like fetching results from other
-api endpoints and aggregating them in a new response.
+already use and they'll just work. We even gain the benefit of being able to do
+things concurrently inside async views like fetching results from other api
+endpoints and aggregating them in a new response.
 
 What we won't get by running async views in a WSGI application is concurrency
 when calling the view from the outside. Since each async view runs in it's own
-thread, we'll still have as many threads as concurrent requests at a time. Ok
-let's install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and
-change the runserver command so that we are now running Django as an ASGI rather
-than as a WSGI application:
+thread, we'll still have as many threads as concurrent requests at a time.
+
+### ASGI Example
+
+To try out an async example that concurrently callable from the outside, let's
+install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and change
+the runserver command so that we are now running Django as an ASGI rather than
+as a WSGI application:
 
 ```shell
 python -m pip install uvicorn
 uvicorn mysite.asgi:application
 ```
 
-Our normal [sync api view](http://localhost:8000/api/) still works normally. But
-if we try to open the
+Our first [sync api view](http://localhost:8000/api/) still works as it should.
+But if we try to open the
 [async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
 timeout error. What is happening here? When the aggregated api view is called,
 it makes subsequent calls to ten sync api views. But uvicorn is a single
 threaded server by default. The main thread responsible for serving the async
-aggregation view is calling itself to answer the sync api view requests creating
-a deadlock which is then resolved by throwing the ReadTimeout after some time.
+aggregation view is calling itself to answer the sync api view requests. This is
+creating a deadlock which is then resolved by throwing the ReadTimeout after
+some time.
 
 We can resolve this deadlock by allowing uvicorn to start more workers:
 
@@ -226,8 +240,8 @@ again.
 
 # Async Test Example
 
-Not that we able to build async views, it would be really nice to be able to
-test them asynchronously, too. Async test cases inherit from Djangos normal
+Now that we able to build async views, it would be really nice to be able to
+test them asynchronously, too. Async test cases inherit from Django's normal
 TestCase base class. But you have to mark async test methods as `async def` to
 be able to `await` responses. In addition to the synchronous Django test client
 there's now an AsyncClient. 
@@ -258,7 +272,7 @@ too.
 # Async Middleware Example
 
 Here's an example adding a middleware which supports both sync
-and async execution. Just add this to `mysite/middleware.py`:
+and async execution. Just add this code to `mysite/middleware.py`:
 ```python
 import json
 import time
