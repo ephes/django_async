@@ -68,14 +68,14 @@ def api(request):
     return JsonResponse(payload)
 ```
 
-And then edit `mysite/urls.py`to look like this:
+And then `mysite/urls.py` to look like this:
 ```python
 from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    path("api/sync/", views.api_sync),
+    path("api/", views.api),
 ]
 ```
 
@@ -108,7 +108,6 @@ async def api_aggregated(request):
         responses = await asyncio.gather(*[client.get(url) for url in urls])
         responses = [r.json() for r in responses]
     elapsed = time.perf_counter() - s
-    print(responses)
     result = {
         "message": "Hello Async World!",
         "responses": responses,
@@ -127,14 +126,15 @@ urlpatterns = [
 
 If you now point your browser to the url of your
 [aggregated view](http://localhost:8000/api/aggregated/), you should be able to
-see your first result from an asynchronous function. If we would have used a
-normal sync and called `httpx.get(url)` in a for loop, this aggregation would
-have taken at least ten seconds, because every sync view sleeps for one second.
-But our async view also was done after about one second, so we must have called
-our sync views concurrently by using `async def`, `async with` and the magic of
+see your first result from an asynchronous function. A normal sync view calling
+`httpx.get(url)` in a for loop would have taken at least ten seconds to
+complete, because every api view sleeps for one second and they would have been
+called one after another and their latencies are just summing up. But our async
+view took only about one second to complete, so we must have called our sync
+views concurrently by using `async def`, `async with` and the magic of
 `asyncio.gather`. Great.
 
-We can check our assumptions by adding a sync aggregation view to `mysite/views.py`:
+We can check our hypothesis by adding a plain sync aggregation view to `mysite/views.py`:
 ```python
 def api_aggregated_sync(request):
     s = time.perf_counter()
@@ -162,18 +162,19 @@ urlpatterns = [
 ```
 
 As expected, this
-[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) took at
+[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) takes now at
 least ten seconds to finish. Fine. But how did this work? Note that we just used
 the normal builtin development server Django provides. Shouldn't we have to use
-some kind of [ASGI](https://asgi.readthedocs.io/en/latest/) server? Since we
-annotated our async view function with `aync def` Django is able to detect that
-we want to write an async view and runs our view in a thread with its own
-[event loop](https://docs.python.org/3/library/asyncio-eventloop.html). That's
-very convenient, because we could now write async views inside our normal
+some kind of [ASGI](https://asgi.readthedocs.io/en/latest/) server?
+
+Since we annotated our async view function with `aync def` Django is able to
+detect that we want to write an async view and runs our view in a thread within
+its own [event loop](https://docs.python.org/3/library/asyncio-eventloop.html).
+That's very convenient, because we could now write async views inside the normal
 [WSGI](https://wsgi.readthedocs.io/en/latest/what.html) Django applications we
-are already using and they'll just work. We even gain the benefit of being
-able to do things concurrently inside async views like fetching results from
-other api endpoints and aggregating them in a new response.
+are already using and they'll just work. We even gain the benefit of being able
+to do things concurrently inside async views like fetching results from other
+api endpoints and aggregating them in a new response.
 
 What we won't get by running async views in a WSGI application is concurrency
 when calling the view from the outside. Since each async view runs in it's own
@@ -202,7 +203,7 @@ We can resolve this deadlock by allowing uvicorn to start more workers:
 uvicorn --workers 10 mysite.asgi:application
 ```
 
-Or more elegantly changing our sync api view into an async api view:
+Or more elegantly, changing our sync api view into an async api view:
 ```python
 async def api(request):
     await asyncio.sleep(1)
@@ -218,3 +219,4 @@ this would not be necessary. Or you could use
 [daphne](https://github.com/django/daphne) from the
 [Django Channels](https://channels.readthedocs.io/en/latest/) project which also
 does reload on code changes.
+
