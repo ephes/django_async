@@ -8,7 +8,7 @@ need for modification.
 What to expect from this article?
 
 1. Small example on how to use async views, middlewares and tests
-2. What are async views good for
+2. Why are async views such a big deal anyway?
 3. Comparison with other techniques (multithreading etc)
 
 # Async View Example
