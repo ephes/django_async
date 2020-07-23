@@ -24,6 +24,7 @@
 # Examples
 * [Demos Phrenzy](https://phoenixphrenzy.com/results)
 * [Eve Online](https://www.eveonline.com/)
+* [Slack](https://slack.com)
 
 # Threads
 * [Unyielding](https://glyph.twistedmatrix.com/2014/02/unyielding.html)
@@ -44,6 +45,8 @@
 * [awesome ASGI](https://github.com/florimondmanca/awesome-asgi)
 * [WSGI](https://wsgi.readthedocs.io/en/latest/what.html)
 * [uvicorn](https://www.uvicorn.org/)
+* [Starlette](https://www.starlette.io)
+* [FastAPI](https://fastapi.tiangolo.com)
 
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
