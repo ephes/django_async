@@ -15,7 +15,7 @@ are some examples:
 * Applications using [Phoenix Liveview](https://youtu.be/MZvmYaFkNJI) - check out
   [Phoenix Phrenzy results](https://phoenixphrenzy.com/results) for additional examples
 * A reactive version of [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/) where model changes are shown interactively 
-* A new api frontend for [Django REST framework](https://www.django-rest-framework.org/) updating a list endpoints interactively as new data comes in 
+* A new api frontend for [Django REST framework](https://www.django-rest-framework.org/) updating list endpoints interactively as new data comes in 
 * All kinds of dashboard applications showing currently active connections, requests per second updating in realtime
 
 As Tom Christie explained in his talk
