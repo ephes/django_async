@@ -328,7 +328,7 @@ def timing_middleware(get_response):
 
     return middleware
 ```
-This middleware just add an elapsed field to every json response
+This middleware just adds an elapsed field to every json response
 to record the duration of each request.
 
 To take effect, you also have to add this middleware to `mysite/settings.py`:
