@@ -1,11 +1,32 @@
 # Django 3.1 Async
 
-With this new version, you can finally use asynchronous views, middlewares and
-tests in Django. You don't have to change anything when you don't want to use
-those async features. In Django 3.1 all of your existing code will run without
-need for modification.
+With version 3.1, you can finally use asynchronous views, middlewares and tests
+in Django. Support for async database queries will follow later. You don't have
+to change anything if you don't want to use those new async features. All of
+your existing synchronous code will run without modification in Django 3.1.
 
-What to expect from this article?
+When do you might want to use those new features? If you are building
+applications that have to deal with a high number of tasks simultaneously. Here
+are some examples:
+
+* Chat services like [Slack](https://slack.com)
+* Gateway APIs / Proxy Services
+* Games, especially MMOs like [Eve Online](https://www.eveonline.com/)
+* Applications using [Phoenix Liveview](https://youtu.be/MZvmYaFkNJI) - check out
+  [Phoenix Phrenzy results](https://phoenixphrenzy.com/results) for additional examples
+* A reactive version of [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/) where model changes are shown interactively 
+* A new api frontend for [Django REST framework](https://www.django-rest-framework.org/) updating a list endpoints interactively as new data comes in 
+* All kinds of dashboard applications showing currently active connections, requests per second updating in realtime
+
+As Tom Christie explained in his talk
+[DjangoCon 2019 - Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU)
+the core question is this: Do we want to have to switch languages to support
+those use cases? And while his [Starlette](https://www.starlette.io) project
+gaining popularity recently in combination with the
+[FastAPI framework](https://fastapi.tiangolo.com) is allowing us to do all this
+in Python, we also might want to keep using Django.
+
+## What to Expect from this Article?
 
 1. Small example on how to use async views, middlewares and tests
 2. Why are async views such a big deal anyway?
@@ -332,7 +353,3 @@ there was not much benefit for end users though. The only thing you could do
 concurrently were file uploads, since uploads don't reach the view layer which
 was not async capable in Django 3.0.
 
-The main motivation to support async in Django comes from the observation that
-there are use cases for massive concurrent applications and that we don't want
-to switch languages to support those use cases, as Tom Christie explained in
-[his DjangoCon 2019 talk](https://youtu.be/u8GSFEg5lnU).
