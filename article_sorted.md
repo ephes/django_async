@@ -19,10 +19,10 @@ are some examples:
 * All kinds of dashboard applications showing currently active connections, requests per second updating in realtime
 
 As Tom Christie explained in his talk
-[DjangoCon 2019 - Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU)
-the core question is this: Do we want to have to switch languages to support
-those use cases? And while his [Starlette](https://www.starlette.io) project
-gaining popularity recently in combination with the
+[Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU) held at
+DjangoCon 2019 the core question is this: Do we want to have to switch languages
+to support those use cases? And while his [Starlette](https://www.starlette.io)
+project gaining popularity recently in combination with the
 [FastAPI framework](https://fastapi.tiangolo.com) is allowing us to do all this
 in Python, we also might want to keep using Django.
 
