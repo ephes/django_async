@@ -46,7 +46,7 @@ Usually I prefer setting up new projects with
 [Poetry](https://python-poetry.org/docs/) nowadays, but I understand that
 requiring people to curl install software makes them feel uncomfortable. And for
 this example it doesn't make a big difference anyway. Therefore I'll use the
-builtin virtualenv module throughout this example.
+builtin virtualenv module.
 
 ```shell
 mkdir mysite && cd mysite
