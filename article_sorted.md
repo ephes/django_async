@@ -219,7 +219,7 @@ as a WSGI application:
 
 ```shell
 python -m pip install uvicorn
-uvicorn mysite.asgi:application
+uvicorn --reload mysite.asgi:application
 ```
 
 Our first [sync api view](http://localhost:8000/api/) still works as it should.
@@ -227,7 +227,10 @@ But if we try to open the
 [async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
 timeout error. What is happening here? When the aggregated api view is called,
 it makes subsequent calls to ten sync api views. But uvicorn is a single
-threaded server by default. The main thread responsible for serving the async
+threaded server by default. 
+
+
+The main thread responsible for serving the async
 aggregation view is calling itself to answer the sync api view requests. This is
 creating a deadlock which is then resolved by throwing the ReadTimeout after
 some time.
@@ -353,3 +356,6 @@ there was not much benefit for end users though. The only thing you could do
 concurrently were file uploads, since uploads don't reach the view layer which
 was not async capable in Django 3.0.
 
+# Credits
+
+Tanks to Klaus Bremer and Simon Schliesky for reading drafts of this.
