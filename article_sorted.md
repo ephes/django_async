@@ -208,14 +208,15 @@ endpoints and aggregating them in a new response.
 
 What we won't get by running async views in a WSGI application is concurrency
 when calling the view from the outside. Since each async view runs in it's own
-thread, we'll still have as many threads as concurrent requests at a time.
+thread, we'll still have as many threads as concurrent requests on any given
+time.
 
 ### ASGI Example
 
 To try out an async example that's concurrently callable from the outside, let's
 install an ASGI server like [uvicorn](https://www.uvicorn.org/) then and change
-the runserver command so that we are now running Django as an ASGI rather than
-as a WSGI application:
+the runserver command so that we are now running Django as an ASGI rather than a
+WSGI application:
 
 ```shell
 python -m pip install uvicorn
@@ -226,24 +227,32 @@ Our first [sync api view](http://localhost:8000/api/) still works as it should.
 But if we try to open the
 [async aggregated view](http://localhost:8000/api/aggregated/) view, we get a
 timeout error. What is happening here? When the aggregated api view is called,
-it makes subsequent calls to ten sync api views. But uvicorn is a single
-threaded server by default. 
+it makes subsequent get requests to ten sync api views. But uvicorn is a single
+threaded server. The `httpx.get` tasks are dispatched to run asynchronously on
+the event loop. But calls to `time.sleep` inside the sync api views are still
+blocking the main thread, piling up to at least ten seconds latency. Since httpx
+has a default timeout of five seconds, the fifth `httpx.get` call probably
+raises an ReadTimeout exception in our async aggregation view causing the whole
+view to fail.
 
+In our previous `python manage.py runserver` example the `time.sleep` calls are
+also blocking the threads they are running in. Since the development server is
+running each request in it's own thread (it's multithreaded) the latencies
+didn't add up but are blocking different threads concurrently. Therefore the
+`httpx.get` calls only have to wait for about one second each.
 
-The main thread responsible for serving the async
-aggregation view is calling itself to answer the sync api view requests. This is
-creating a deadlock which is then resolved by throwing the ReadTimeout after
-some time.
-
-We can resolve this deadlock by allowing uvicorn to start more workers:
+If the backend you are sending requests asynchronously to doesn't support
+answering those requests concurrently, you still have to wait. We can resolve
+this by allowing uvicorn to start more workers, but losing the ability to reload
+our code automatically on change.
 
 ```shell
 uvicorn --workers 10 mysite.asgi:application
 ```
 
-Or more elegantly, changing our sync api view into an async api view. You have
-to move the `import asyncio` line to the top of the file, if you haven't done
-this already:
+That said, uvicorn is a async capable server, why don't take advantage of this
+by turning our sync api view into an async api view. You have to move the
+`import asyncio` line to the top of the file, if you haven't done this already:
 ```python
 async def api(request):
     await asyncio.sleep(1)
