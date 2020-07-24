@@ -22,8 +22,8 @@ As Tom Christie explained in his talk
 [Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU) held at
 DjangoCon 2019 the core question is this: Do we want to have to switch languages
 to support those use cases? And while his [Starlette](https://www.starlette.io)
-project gaining popularity recently in combination with the
-[FastAPI framework](https://fastapi.tiangolo.com) is allowing us to do all this
+project (gaining popularity recently in combination with the
+[FastAPI framework](https://fastapi.tiangolo.com)) is allowing us to do all this
 in Python, we also might want to keep using Django.
 
 ## What to Expect from this Article?
@@ -241,17 +241,19 @@ running each request in it's own thread (it's multithreaded) the latencies
 didn't add up but are blocking different threads concurrently. Therefore the
 `httpx.get` calls only have to wait for about one second each.
 
-If the backend you are sending requests asynchronously to doesn't support
-answering those requests concurrently, you still have to wait. We can resolve
-this by allowing uvicorn to start more workers, but losing the ability to reload
-our code automatically on change.
+If the backend you are sending requests to doesn't support answering those
+requests concurrently, you still have to wait. We can resolve this by allowing
+uvicorn to start more worker processes. But this would not guarantee that each
+new request gets to run on a fresh worker. Maybe it's dispatched to a worker
+which is already blocked by another request. So even if you have ten workers,
+your aggregated response time will probably be larger than one second.
 
 ```shell
 uvicorn --workers 10 mysite.asgi:application
 ```
 
-That said, uvicorn is a async capable server, why don't take advantage of this
-by turning our sync api view into an async api view. You have to move the
+But uvicorn is a async capable server, why don't we take advantage of this by
+turning our sync api view into an async api view? You also have to move the
 `import asyncio` line to the top of the file, if you haven't done this already:
 ```python
 async def api(request):
@@ -262,14 +264,11 @@ async def api(request):
     return JsonResponse(payload)
 ```
 
-Note that you have to restart uvicorn to have your code changes take effect. A
-future version of the Django development server might include an ASGI capable
-version so this would not be necessary. Or you could use
-[daphne](https://github.com/django/daphne) from the
-[Django Channels](https://channels.readthedocs.io/en/latest/) project which also
-does reload on code changes. Ok, now our
-[async aggregated view](http://localhost:8000/api/aggregated/) should work
-again.
+Note that you have to restart uvicorn to have your code changes take effect if
+you are running uvicorn with multiple workers (with `--reload` you don't have to
+restart uvicorn). Ok, now our
+[async aggregated view](http://localhost:8000/api/aggregated/) should work again
+as expected and our little example is async all the way down.
 
 # Async Test Example
 
