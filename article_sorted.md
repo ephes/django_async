@@ -29,10 +29,10 @@ in Python, we also might want to keep using Django.
 ## What to Expect from this Article?
 
 1. Small example on how to use async views, middlewares and tests
-2. Why are async views such a big deal anyway?
+2. Why are async features such a big deal anyway?
 3. Comparison with other techniques (multithreading etc)
 
-# Async View Example
+# Part I - Async View Example
 
 For this example you need a working installation of
 [Python](https://www.python.org/). Any version from 3.6 onwards will do, but I
@@ -355,7 +355,15 @@ You can check with your [async api view](http://localhost:8000/api/) and
 really have to increase the number of workers, otherwise you'll run into an
 timeout) that your new middleware works in both cases.
 
-# Why Async Views
+# Part II - Why Async
+
+Let's have a look at the options you have when the number of task your application has to do increases:
+
+* Spin up more machines
+* Have your application to use more cores on a single machine
+* Start more operating system processes
+* Start more operating system threads per process
+* Use async/await to schedule multiple tasks in a single thread
 
 Async support for Django is on it's way for quite some time now. Since
 [version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
