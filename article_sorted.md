@@ -357,13 +357,33 @@ timeout) that your new middleware works in both cases.
 
 # Part II - Why Async
 
-Let's have a look at the options you have when the number of task your application has to do increases:
+Concurrency via async is such a big deal because:
+
+1. Async is the most resource efficient way to increase the number of tasks an
+   application will be able to handle if those tasks are I/O bound
+2. It's easier to write concurrent async programs compared to the alternatives
+
+## Resource Efficiency
+
+What options do you have, when the number of tasks your application has to do
+simultaneously increases? Let's have a look at the alternatives ordered from
+high to low amount of effort:
 
 * Spin up more machines
 * Have your application to use more cores on a single machine
-* Start more operating system processes
+* Use more operating system processes
 * Start more operating system threads per process
 * Use async/await to schedule multiple tasks in a single thread
+
+If your tasks are CPU bound, you can only do more of them, if you add more
+cores. And if you use Python, the only way to use more cores is to add more
+operating system processes.
+
+And while only adding cores and utilizing them with more processes is the only option in Python to increase the number of tasks that your application will be able to handle if those tasks are CPU bound.
+
+And while only the first two options provide an improvement for tasks that are CPU bound
+
+# foo
 
 Async support for Django is on it's way for quite some time now. Since
 [version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
