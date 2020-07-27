@@ -373,7 +373,7 @@ Concurrency via async is such a big deal, because it has two main advantages
 over other approaches provided that your tasks are I/O bound:
 
 1. Async is more efficient
-2. It's easier to write async concurrent programs
+2. It's easier to write concurrent programs using async
 
 ## Resource Efficiency
 
@@ -382,7 +382,7 @@ has to do simultaneously? Let's have a look at the alternatives ordered from
 high to low amount of effort:
 
 * Spin up more machines
-* Have your application to use more cores on a single machine
+* Have your application use more cores on a single machine
 * Use more operating system processes
 * Start more operating system threads per process
 * Use async/await to schedule multiple tasks in a single thread
@@ -411,8 +411,49 @@ request will be then sent to your server and a complete application server
 process will be blocked and waiting for the database to answer your query.
 That's a lot of overhead for doing basically nothing.
 
+> Python threads are great at doing nothing.
+> 
+>   — David Beazley Python coach and mad scientist
+
 And while using threads would be more efficient than using processes there's
 still more overhead needed compared to using async tasks.
+
+## Ease of Use
+
+> Concurrency: one of the most difficult topics in computer science
+> (usually best avoided).
+> 
+>  — David Beazley Python coach and mad scientist
+
+Don't be fooled, writing concurrent programs using async/await is still harder
+than writing synchronous ones. But it's not as hard as writing concurrent
+programs using multiple threads. Why? [Because threads make local reasoning
+difficult](https://glyph.twistedmatrix.com/2014/02/unyielding.html). You can't
+just take a function and think about whether the code in there makes sense in
+isolation. You have to keep in mind all the other code which might be running
+concurrently interfering with the code in the function you are looking at. In
+this respect threads have a
+[daunting similarity to goto statements](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/).
+Python threads are operating system threads and the OS kernel gets to decide
+which threads is scheduled to run. Therefore you simply don't know when the flow
+of control will be transferred to another thread. It could happen any time.
+
+Async tasks are different. They use cooperative multitasking where each tasks
+decides on it's own when it's time to give up control. As long as you won't use
+the `await` keyword to
+[signal that now other tasks might be executed](https://hynek.me/articles/waiting-in-asyncio/)
+concurrently your code runs sequentially just like a normal synchronous program.
+Which means that if you call blocking I/O functions or hog the CPU with long
+running calculations, no other task will get the chance to run. Therefore you
+have to know whether a function you calls other functions that might block. And
+if you are doing I/O that would be awaitable you have to mark your function
+awaitable with `async def`, which is a little bit like writing Python
+[using explicitly enforced typing](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism).
+It's harder because you have to be more precise about what kind of things your
+code is doing. Therefore multithreading will look easier if you simply count the
+lines you'd have to change to transform a single task application into one which
+is able to run multiple tasks concurrently. But the additional effort in code
+lines if you take the async route will probably worthwhile in the long run.
 
 # Credits
 
