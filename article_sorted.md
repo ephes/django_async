@@ -195,7 +195,7 @@ def api_aggregated_sync(request):
 And also add a route to the sync aggregated view to `mysite/urls.py`:
 ```python
 urlpatterns = [
-    path("api/", views.api_sync),
+    path("api/", views.api),
     path("api/aggregated/", views.api_aggregated),
     path("api/aggregated/sync/", views.api_aggregated_sync),
 ]
