@@ -78,7 +78,7 @@ python manage.py runserver          # should start the development server now
 You should now be able to point your browser to
 [localhost](http://localhost:8000/) and see the new Django project sample page.
 If this doesn't work, make sure you didn't set the $DJANGO_SETTINGS_MODULE
-environment variable. This happens to me all the time.
+environment variable. This is what happens to me all the time.
 
 ## Create some Views
 
