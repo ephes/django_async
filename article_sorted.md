@@ -1,9 +1,10 @@
 # Django 3.1 Async
 
-With version 3.1, you can finally use asynchronous views, middlewares and tests
-in Django. Support for async database queries will follow later. You don't have
-to change anything if you don't want to use those new async features. All of
-your existing synchronous code will run without modification in Django 3.1.
+With [version 3.1](https://docs.djangoproject.com/en/3.1/topics/async/), you can
+finally use asynchronous views, middlewares and tests in Django. Support for
+async database queries will follow later. You don't have to change anything if
+you don't want to use those new async features. All of your existing synchronous
+code will run without modification in Django 3.1.
 
 Async support for Django is on it's way for quite some time now. Since
 [version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
@@ -411,10 +412,6 @@ request will be then sent to your server and a complete application server
 process will be blocked and waiting for the database to answer your query.
 That's a lot of overhead for doing basically nothing.
 
-> Python threads are great at doing nothing.
-> 
->   — David Beazley Python coach and mad scientist
-
 And while using threads would be more efficient than using processes there's
 still more overhead needed compared to using async tasks.
 
@@ -455,16 +452,41 @@ lines you'd have to change to transform a single task application into one which
 is able to run multiple tasks concurrently. But the additional effort in code
 lines if you take the async route will probably worthwhile in the long run.
 
-## Async to Sync etc. details
+## Async Adapter Functions
 
-## History
+Ok, using async tasks to do things concurrently seems to be reasonable. But what
+about the ORM and other parts of Django which are not async capable yet? Is
+there a way to fetch models from the database without blocking all other async
+tasks? Fortunately there are two
+[adapter functions](https://docs.djangoproject.com/en/3.1/topics/async/#async-adapter-functions)
+helping us to deal with situations like this.
 
-It's now possible because python 2 and 3.4 support are leaving. Starlette
+Let's say we want to fetch a model from the database while being in an async
+view function. Then we can wrap our model fetching function in a
+`sync_to_async()` call which will then return a coroutine we can await. Other
+async tasks are still running concurrently, because the calling async view
+awaiting the wrapped sync function will be guaranteed to run in an event loop on
+a different thread. By default the called sync function will be executed in a
+newly created thread. But sometimes (accessing sqlite for example) you need to
+pass `thread_sensitive=True` to force the called sync function to be executed on
+the main thread instead.
+
+And sometimes it's the other way around and you need to make a call to an async
+function from a sync one. This is basically the same situation you encounter
+when writing an async program from scratch. Usually you would use
+`asyncio.run(my_coroutine)` to start an event loop managing calls to your async
+functions. In Django you'll wrap your async function in a call to
+`async_to_sync()` which will take care of setting up the event loop but also
+makes sure threadlocals will work.
 
 # Part III - The gory Details
 
 I stumbled about a lot of quirks and oddities while writing this article, and
 this is the place to share them :).
+
+## History
+It's now possible because python 2 and 3.4 support are leaving. Starlette
+
 
 ## Concurrency vs Parallelism
 
