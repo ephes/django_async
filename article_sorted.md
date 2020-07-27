@@ -5,6 +5,13 @@ in Django. Support for async database queries will follow later. You don't have
 to change anything if you don't want to use those new async features. All of
 your existing synchronous code will run without modification in Django 3.1.
 
+Async support for Django is on it's way for quite some time now. Since
+[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
+there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. But
+there was not much benefit for end users though. The only thing you could do
+concurrently were file uploads, since uploads don't reach the view layer which
+was not async capable in Django 3.0.
+
 When do you might want to use those new features? If you are building
 applications that have to deal with a high number of tasks simultaneously. Here
 are some examples:
@@ -12,11 +19,17 @@ are some examples:
 * Chat services like [Slack](https://slack.com)
 * Gateway APIs / Proxy Services
 * Games, especially MMOs like [Eve Online](https://www.eveonline.com/)
-* Applications using [Phoenix Liveview](https://youtu.be/MZvmYaFkNJI) - check out
-  [Phoenix Phrenzy results](https://phoenixphrenzy.com/results) for additional examples
-* A reactive version of [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/) where model changes are shown interactively 
-* A new api frontend for [Django REST framework](https://www.django-rest-framework.org/) updating list endpoints interactively as new data comes in 
-* All kinds of dashboard applications showing currently active connections, requests per second updating in realtime
+* Applications using [Phoenix Liveview](https://youtu.be/MZvmYaFkNJI) - check
+  out [Phoenix Phrenzy results](https://phoenixphrenzy.com/results) for
+  additional examples
+* A reactive version of
+  [Django Admin](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/) where
+  model changes are shown interactively
+* A new api frontend for
+  [Django REST framework](https://www.django-rest-framework.org/) updating list
+  endpoints interactively as new data comes in
+* All kinds of dashboard applications showing currently active connections,
+  requests per second updating in realtime
 
 As Tom Christie explained in his talk
 [Sketching out a Django redesign](https://youtu.be/u8GSFEg5lnU) held at
@@ -329,7 +342,6 @@ def timing_middleware(get_response):
             response = await get_response(request)
             response = add_elapsed_time(response, start)
             return response
-
     else:
         def middleware(request):
             start = time.perf_counter()
@@ -357,16 +369,16 @@ timeout) that your new middleware works in both cases.
 
 # Part II - Why Async
 
-Concurrency via async is such a big deal because:
+Concurrency via async is such a big deal, because it has two main advantages
+over other approaches provided that your tasks are I/O bound:
 
-1. Async is the most resource efficient way to increase the number of tasks an
-   application will be able to handle if those tasks are I/O bound
-2. It's easier to write concurrent async programs compared to the alternatives
+1. Async is more efficient
+2. It's easier to write async concurrent programs
 
 ## Resource Efficiency
 
-What options do you have, when the number of tasks your application has to do
-simultaneously increases? Let's have a look at the alternatives ordered from
+What options do you have, when the number of tasks increases your application
+has to do simultaneously? Let's have a look at the alternatives ordered from
 high to low amount of effort:
 
 * Spin up more machines
@@ -375,22 +387,32 @@ high to low amount of effort:
 * Start more operating system threads per process
 * Use async/await to schedule multiple tasks in a single thread
 
-If your tasks are CPU bound, you can only do more of them, if you add more
-cores. And if you use Python, the only way to use more cores is to add more
-operating system processes.
+If your tasks are CPU bound, you can only do more of them by adding more cores.
+And if you use Python, the only way to use more cores is to add more operating
+system processes. But most of the tasks we face when we build a website are not
+CPU but I/O bound. Here are a some examples:
 
-And while only adding cores and utilizing them with more processes is the only option in Python to increase the number of tasks that your application will be able to handle if those tasks are CPU bound.
+* Submitting sql queries to a database and fetching the result
+* Aggregating answers from different API endpoints or microservices
+* Getting a result from elasticsearch or a similar full text search service
+* Fetching a site fragment from cache
+* Loading some image from disk
 
-And while only the first two options provide an improvement for tasks that are CPU bound
+When your browser sends a request to a website you'll wait some time until the
+first byte is received. This time is critical to the perceived speed of a site,
+because your browser won't do anything before that happened. But most of this
+important time is not spend calculating the response, but waiting for some I/O
+operation to complete. The speed of most websites could be improved dramatically
+if all those blocking I/O calls would be replaced by non-blocking operations.
 
-# foo
+Instead of waiting in the application server for a database result you could use
+an Ajax request in the browser to fetch this result later, for example. This
+request will be then sent to your server and a complete application server
+process will be blocked and waiting for the database to answer your query.
+That's a lot of overhead for doing basically nothing.
 
-Async support for Django is on it's way for quite some time now. Since
-[version 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/#asgi-support)
-there's support for [ASGI](https://asgi.readthedocs.io/en/latest/) included. But
-there was not much benefit for end users though. The only thing you could do
-concurrently were file uploads, since uploads don't reach the view layer which
-was not async capable in Django 3.0.
+And while using threads would be more efficient than using processes there's
+still more overhead needed compared to using async tasks.
 
 # Credits
 
