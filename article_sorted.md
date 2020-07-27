@@ -42,8 +42,8 @@ in Python, we also might want to keep using Django.
 ## What to Expect from this Article?
 
 1. Small example on how to use async views, middlewares and tests
-2. Why are async features such a big deal anyway?
-3. Comparison with other techniques (multithreading etc)
+2. Why is async such a big deal anyway?
+3. The gory details of multithreading vs async, GIL etc.
 
 # Part I - Async View Example
 
@@ -455,6 +455,126 @@ lines you'd have to change to transform a single task application into one which
 is able to run multiple tasks concurrently. But the additional effort in code
 lines if you take the async route will probably worthwhile in the long run.
 
+## Async to Sync etc. details
+
+## History
+
+It's now possible because python 2 and 3.4 support are leaving. Starlette
+
+# Part III - The gory Details
+
+I stumbled about a lot of quirks and oddities while writing this article, and
+this is the place to share them :).
+
+## Concurrency vs Parallelism
+
+> Concurrency is about dealing with lots of things at once.
+> Parallelism is about doing lots of things at once.
+> Not the same, but related. One is about structure, one is about
+> execution. Concurrency provides a way to structure a solution to
+> solve a problem that may (but not necessarily) be parallelizable.
+> 
+> — Rob Pike Co-inventor of the Go language
+
+The quote above may (but not necessarily) be helpful to understand the
+difference between concurrency and parallelism. I found another example to be
+more helpful: Think of a bartender serving customers. One single bartender is
+capable of preparing multiple drinks and therefore serving multiple customers
+concurrently. But he's still doing one step after another. If multiple drinks
+have to be created in parallel, you need multiple bartenders.
+
+Doing things concurrently on a computer is possible, even if you only have one
+CPU executing instructions step by step. But it's not possible to do multiple
+tasks at the same time without using multiple CPUs. And because of the infamous
+[GIL](https://www.dabeaz.com/python/UnderstandingGIL.pdf), it's impossible to do
+things on multiple CPUs using only one OS process. Contrary to popular belief
+this is not a unique feature of Python, but also present in Ruby, NodeJS and
+PHP. All those languages use reference counting for memory management and it's
+impossible ([or nearly impossible](https://lwn.net/Articles/689548/)) to use
+reference counting without a GIL without being at least an order of magnitude
+slower. Java uses a different kind of automatic memory management and therefore
+has no need for a GIL. But Java has to pay a price in slower single thread
+performance (what most users should care about, since most software is not
+running on multiple CPUs in parallel) and unpredictable latency. It's just a
+different set of tradeoffs which might or might not fit your use case.
+
+## Scalability
+
+It's often said that threads are not as scalable as async tasks, because they
+tend to use more memory or hog the CPU because of all the context switches they
+are causing. I'm at least a bit skeptical about such claims. Under investigation
+they often turn out to be not true or not true anymore. The default stack size
+for a new thread on linux and macOS (`ulimit -s`) is 8MB. But that doesn't mean
+this is the real memory overhead of starting an additional thread. First off,
+it's virtual memory and not resident, and second - yes, while this imposed a
+hard and low limit on the number of threads on 32bit machines (usable virtual
+memory is only 3GB), on 64bit machines this limit is no longer relevant. Here's
+an article describing that
+[running 10k threads](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
+should be not a big problem on current hardware. But while starting 10k threads
+on linux worked as expected, on macOS this little script lead to a reproducible
+kernel panic:
+
+```python
+import time
+import concurrent.futures
+
+
+def do_almost_nothing(thread_id):
+    time.sleep(100)
+    return thread_id
+
+
+num_threads = 10000
+results = []
+s = time.perf_counter()
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+    future_to_function = {executor.submit(do_almost_nothing, thread_id): thread_id for thread_id in range(num_threads)}
+    for future in concurrent.futures.as_completed(future_to_function):
+        function = future_to_function[future]
+        try:
+            results.append(future.result())
+        except Exception as exc:
+            print('%r generated an exception: %s' % (function, exc))
+elapsed = time.perf_counter() - s
+print(f"do_almost_nothing executed in {elapsed:0.2f} seconds.")
+```
+
+Async tasks on the other hand only take about 2KB memory and are more or less
+just one function call. Ok, that's hard to beat. Use this snippet to measure
+for yourself:
+
+```python
+import time
+import asyncio
+
+
+async def do_almost_nothing(task_id):
+    await asyncio.sleep(5)
+    return task_id
+
+
+async def main():
+    num_tasks = 1000000
+    tasks = []
+    for task_id in range(num_tasks):
+        tasks.append(asyncio.create_task(do_almost_nothing(task_id)))
+    responses = await asyncio.gather(*tasks)
+    print(len(responses))
+
+
+asyncio.run(main())
+```
+
+Threads also did suffer from a lock contention problem on Python 2.
+The Python interpreter checked every 100 ticks if another thread
+should be able to acquire the GIL. This leads to slower performance
+even on a single CPU, but on on machines with multiple cores this
+was especially bad, because now threads would be fighting on
+different CPUs in parallel about getting the GIL. Those issues were
+fixed with the new GIL introduces in Python 3.2 and now check gets
+only called every 5ms (it's configurable via sys.setswitchinterval).
+
 # Credits
 
-Tanks to Klaus Bremer and Simon Schliesky for reading drafts of this.
+Thanks to Klaus Bremer and Simon Schliesky for reading drafts of this.
