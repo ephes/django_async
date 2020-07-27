@@ -455,8 +455,7 @@ lines if you take the async route will probably worthwhile in the long run.
 And while writing concurrent programs using asyncio is easier than using
 multiple threads there's still room for improvement. There's
 [Curio](https://github.com/dabeaz/curio) for example - an alternative to the
-builtin asyncio module. Or [Trio](https://trio.readthedocs.io/en/stable/)
-inspired by Curio which is using nurseries to get rid of futures which remain an
+builtin asyncio module. Or the Curio inspired [Trio](https://trio.readthedocs.io/en/stable/) which is using nurseries to get rid of futures which remain an
 obstacle to local reasoning about code in asyncio.
 
 ## Async Adapter Functions
