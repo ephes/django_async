@@ -47,6 +47,7 @@
 * [uvicorn](https://www.uvicorn.org/)
 * [Starlette](https://www.starlette.io)
 * [FastAPI](https://fastapi.tiangolo.com)
+* [Django Channels](https://channels.readthedocs.io/en/latest/)
 
 # Trio
 * [Notes on structured concurrency](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)
