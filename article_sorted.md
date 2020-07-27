@@ -373,7 +373,7 @@ timeout) that your new middleware works in both cases.
 Concurrency via async is such a big deal, because it has two main advantages
 over other approaches provided that your tasks are I/O bound:
 
-1. Async is more efficient
+1. It's more efficient
 2. It's easier to write concurrent programs using async
 
 ## Resource Efficiency
@@ -452,6 +452,13 @@ lines you'd have to change to transform a single task application into one which
 is able to run multiple tasks concurrently. But the additional effort in code
 lines if you take the async route will probably worthwhile in the long run.
 
+And while writing concurrent programs using asyncio is easier than using
+multiple threads there's still room for improvement. There's
+[Curio](https://github.com/dabeaz/curio) for example. Or
+[Trio](https://trio.readthedocs.io/en/stable/) inspired by Curio which is using
+nurseries to get rid of futures which remain an obstacle to local reasoning
+about code in asyncio.
+
 ## Async Adapter Functions
 
 Ok, using async tasks to do things concurrently seems to be reasonable. But what
@@ -479,14 +486,24 @@ functions. In Django you'll wrap your async function in a call to
 `async_to_sync()` which will take care of setting up the event loop but also
 makes sure threadlocals will work.
 
-# Part III - The gory Details
+# Part III - Additional Details
 
 I stumbled about a lot of quirks and oddities while writing this article, and
 this is the place to share them :).
 
-## History
-It's now possible because python 2 and 3.4 support are leaving. Starlette
+## A little bit of History
 
+Historically, async programming via explicit coroutines is the newest paradigm
+trying to making writing concurrent programs easier. The asyncio standard
+library module was added to Python 3.4 in 2014. But the keywords `async` and
+`await` were first introduced in Python 3.5 one and a half year later. For
+Django it only made sense to support the new async syntax after dropping support
+for Python 3.4 which happened with Django 2.1. The gap between the first Django
+version which could support async theoretically (2.1) and the version which
+started supporting async (3.0) is not that big.
+[Starlette](https://www.starlette.io) is a web framework which was async from
+the start only supporting Python versions upwards 3.6 with
+[good reasons](https://github.com/encode/starlette/issues/187) to do so.
 
 ## Concurrency vs Parallelism
 
