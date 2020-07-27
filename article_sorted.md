@@ -499,8 +499,7 @@ module was added to Python 3.4 in 2014. The keywords `async` and `await` were
 first introduced in Python 3.5 one and a half year later, adding native language
 support for async functions. But even Python 3.5 seems to be hard to support, as
 most of the async native libraries and web frameworks like Curio, Trio and
-[Starlette](https://www.starlette.io) require at least Python 3.6 in the
-meantime.
+Starlette require at least Python 3.6 in the meantime.
 
 Django's async story started about two years ago as Andrew Godwin proposed
 [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/).
