@@ -494,13 +494,12 @@ this is the place to share them :).
 ## A little bit of History
 
 Historically, async programming via explicit coroutines is the newest paradigm
-trying to making writing concurrent programs easier. The asyncio standard
-library module was added to Python 3.4 in 2014. The keywords `async` and `await`
-were first introduced in Python 3.5 one and a half year later adding native
-language support for async functions. But even Python 3.5 seems to be missing
-relevant features, as most of the async native libraries and web frameworks like
-Curio, Trio and [Starlette](https://www.starlette.io) require at least Python
-3.6.
+trying to make writing concurrent programs easier. The asyncio standard library
+module was added to Python 3.4 in 2014. The keywords `async` and `await` were
+first introduced in Python 3.5 one and a half year later, adding native language
+support for async functions. But even Python 3.5 seems to be hard to support, as
+most of the async native libraries and web frameworks like Curio, Trio and
+[Starlette](https://www.starlette.io) meanwhile require at least Python 3.6.
 
 Django's async story started about two years ago as Andrew Godwin proposed
 [A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/).
@@ -627,6 +626,9 @@ machines with multiple cores this was especially bad, because now threads would
 fight over getting the GIL on different CPUs in parallel. Those issues were
 fixed with the new GIL introduced in Python 3.2 and now check gets only called
 every 5ms (it's configurable via sys.setswitchinterval).
+
+# A final Example
+
 
 
 # Credits
