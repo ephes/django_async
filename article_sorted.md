@@ -628,9 +628,57 @@ fight over getting the GIL on different CPUs in parallel. Those issues were
 fixed with the new GIL introduced in Python 3.2 and now check gets only called
 every 5ms (it's configurable via sys.setswitchinterval).
 
-# A final Example
+# One final Example
+
+After deciding to write something about the upcoming support of async views in
+Django 3.1, I was looking for a compelling example to show off the benefits of
+async views. Chat is not a good example because you probably would use
+websockets to implement a chat site nowadays. But you'll need
+[Django Channels](https://channels.readthedocs.io/en/latest/) for websocket
+support since support for protocols other than http will continue to stay in
+Channels. Finally I settled on an async view aggregating results from multiple
+other api endpoints. But do you really need Django 3.1 and async views to be
+able to write a view like this?
+
+Let's add this view to our `mysite/views.py`file:
+```python
+import concurrent.futures
 
 
+def api_aggregated_threadpool(request):
+    s = time.perf_counter()
+    results = []
+    urls = get_api_urls()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_url = {executor.submit(httpx.get, url): url for url in urls}
+        for future in concurrent.futures.as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                r = future.result()
+                results.append(r.json())
+            except Exception as exc:
+                print('%r generated an exception: %s' % (url, exc))
+    elapsed = time.perf_counter() - s
+    print(f"fetch executed in {elapsed:0.2f} seconds.")
+    result = {"responses": results}
+    return JsonResponse(result)
+```
+
+And connect this view to an url adding a route to `mysite/urls.py`:
+```python
+urlpatterns = [
+    path("api/", views.api),
+    path("api/aggregated/", views.api_aggregated),
+    path("api/aggregated/sync/", views.api_aggregated_sync),
+    path("api/aggregated/threadpool/", views.api_aggregated_threadpool),
+]
+```
+
+Start your local WSGI server with `python manage.py runserver` and have a look
+at the [result](http://localhost:8000/api/aggregated/threadpool/). If you just
+want to aggregate some request results concurrently a threadpool will probably
+sufficient. You won't have to use a different application server supporting ASGI
+and this works also for older Django versions.
 
 # Credits
 
