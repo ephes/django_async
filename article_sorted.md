@@ -495,15 +495,27 @@ this is the place to share them :).
 
 Historically, async programming via explicit coroutines is the newest paradigm
 trying to making writing concurrent programs easier. The asyncio standard
-library module was added to Python 3.4 in 2014. But the keywords `async` and
-`await` were first introduced in Python 3.5 one and a half year later. For
-Django it only made sense to support the new async syntax after dropping support
-for Python 3.4 which happened with Django 2.1. The gap between the first Django
-version which could support async theoretically (2.1) and the version which
-started supporting async (3.0) is not that big.
-[Starlette](https://www.starlette.io) is a web framework which was async from
-the start only supporting Python versions upwards 3.6 with
-[good reasons](https://github.com/encode/starlette/issues/187) to do so.
+library module was added to Python 3.4 in 2014. The keywords `async` and `await`
+were first introduced in Python 3.5 one and a half year later adding native
+language support for async functions. But even Python 3.5 seems to be missing
+relevant features, as most of the async native libraries and web frameworks like
+Curio, Trio and [Starlette](https://www.starlette.io) require at least Python
+3.6.
+
+Django's async story started about two years ago as Andrew Godwin proposed
+[A Django Async Roadmap](https://www.aeracode.org/2018/06/04/django-async-roadmap/).
+It only made sense to support the new async syntax after dropping support for
+Python 3.4 which happened with Django 2.1. One year ago,
+[DEP 0009: Async-capable Django](https://github.com/django/deps/blob/master/accepted/0009-async.rst)
+was
+[approved](https://groups.google.com/forum/#!msg/django-developers/5CVsR9FSqmg/UiswdhLECAAJ)
+by the technical board. It's already a pretty detailed plan on how to move
+Django from sync-only to native async with sync wrapper. End of 2019
+[Django 3.0](https://docs.djangoproject.com/en/3.0/releases/3.0/) was released
+(requiring at least Python 3.6) adding support for ASGI. The gap between the
+first Django version which could have supported async hypothetically (2.1) and
+the version which started supporting async (3.0) is not that big, to say the
+least.
 
 ## Concurrency vs Parallelism
 
