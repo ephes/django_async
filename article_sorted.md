@@ -65,7 +65,7 @@ builtin virtualenv module.
 ```shell
 mkdir mysite && cd mysite
 python -m venv mysite_venv && source mysite_venv/bin/activate  
-python -m pip install django==3.1rc1 httpx
+python -m pip install django==3.1rc1 httpx  # install Django 3.1 + async capable http client
 ```
 
 ## Initialize Django
