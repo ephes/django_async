@@ -8,11 +8,13 @@ def do_almost_nothing(task_id):
     return task_id
 
 
-num_tasks = 1000
+num_tasks = 5000
 results = []
 s = time.perf_counter()
-with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
-    future_to_function = {executor.submit(do_almost_nothing, task_id): task_id for task_id in range(num_tasks)}
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_tasks) as executor:
+    future_to_function = {}
+    for task_id in range(num_tasks):
+        future_to_function[executor.submit(do_almost_nothing, task_id)] = task_id
     for future in concurrent.futures.as_completed(future_to_function):
         function = future_to_function[future]
         try:

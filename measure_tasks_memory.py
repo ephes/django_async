@@ -8,7 +8,7 @@ async def do_almost_nothing(task_id):
 
 
 async def main():
-    num_tasks = 1000000
+    num_tasks = 5000
     tasks = []
     for task_id in range(num_tasks):
         tasks.append(asyncio.create_task(do_almost_nothing(task_id)))
