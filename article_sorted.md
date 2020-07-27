@@ -43,7 +43,7 @@ in Python, we also might want to keep using Django.
 
 1. Small example on how to use async views, middlewares and tests
 2. Why is async such a big deal anyway?
-3. The gory details of multithreading vs async, GIL etc.
+3. The gory details of multithreading vs async, GIL and other oddities
 
 # Part I - Async View Example
 
@@ -367,7 +367,7 @@ You can check with your [async api view](http://localhost:8000/api/) and
 really have to increase the number of workers, otherwise you'll run into an
 timeout) that your new middleware works in both cases.
 
-# Part II - Why Async
+# Part II - Why Async?
 
 Concurrency via async is such a big deal, because it has two main advantages
 over other approaches provided that your tasks are I/O bound:
@@ -377,8 +377,8 @@ over other approaches provided that your tasks are I/O bound:
 
 ## Resource Efficiency
 
-What options do you have, when the number of tasks increases your application
-has to do simultaneously? Let's have a look at the alternatives ordered from
+What options do you have, when the number of tasks your application has to do
+simultaneously increases? Let's have a look at the alternatives ordered from
 high to low amount of effort:
 
 * Spin up more machines
@@ -517,19 +517,22 @@ kernel panic:
 
 ```python
 import time
+
 import concurrent.futures
 
 
-def do_almost_nothing(thread_id):
-    time.sleep(100)
-    return thread_id
+def do_almost_nothing(task_id):
+    time.sleep(5)
+    return task_id
 
 
-num_threads = 10000
+num_tasks = 10000
 results = []
 s = time.perf_counter()
-with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
-    future_to_function = {executor.submit(do_almost_nothing, thread_id): thread_id for thread_id in range(num_threads)}
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_tasks) as executor:
+    future_to_function = {}
+    for task_id in range(num_tasks):
+        future_to_function[executor.submit(do_almost_nothing, task_id)] = task_id
     for future in concurrent.futures.as_completed(future_to_function):
         function = future_to_function[future]
         try:
@@ -540,9 +543,9 @@ elapsed = time.perf_counter() - s
 print(f"do_almost_nothing executed in {elapsed:0.2f} seconds.")
 ```
 
-Async tasks on the other hand only take about 2KB memory and are more or less
-just one function call. Ok, that's hard to beat. Use this snippet to measure
-for yourself:
+Async tasks on the other hand only take about 2KB memory each and are more or
+less just one function call. Ok, that's hard to beat. Use this snippet to
+measure for yourself:
 
 ```python
 import time
@@ -566,14 +569,14 @@ async def main():
 asyncio.run(main())
 ```
 
-Threads also did suffer from a lock contention problem on Python 2.
-The Python interpreter checked every 100 ticks if another thread
-should be able to acquire the GIL. This leads to slower performance
-even on a single CPU, but on on machines with multiple cores this
-was especially bad, because now threads would be fighting on
-different CPUs in parallel about getting the GIL. Those issues were
-fixed with the new GIL introduces in Python 3.2 and now check gets
-only called every 5ms (it's configurable via sys.setswitchinterval).
+Threads also did suffer from a lock contention problem on Python 2. The Python
+interpreter checked every 100 ticks if another thread should be able to acquire
+the GIL. This leads to slower performance even on a single CPU, but on on
+machines with multiple cores this was especially bad, because now threads would
+fight over getting the GIL on different CPUs in parallel. Those issues were
+fixed with the new GIL introduced in Python 3.2 and now check gets only called
+every 5ms (it's configurable via sys.setswitchinterval).
+
 
 # Credits
 
