@@ -172,7 +172,7 @@ concurrently by using `async def`, `async with` and the magic of
 `asyncio.gather`. Great.
 
 
-### Compare  with Sync View
+### Compare with Sync View
 
 We can check our hypothesis by adding a plain sync aggregation view to `mysite/views.py`:
 ```python
@@ -490,7 +490,7 @@ makes sure threadlocals will work.
 I stumbled about a lot of quirks and oddities while writing this article, and
 this is the place to share them :).
 
-## A little bit of History
+## A Little Bit of History
 
 Historically, async programming via explicit coroutines is the newest paradigm
 trying to make writing concurrent programs easier. The asyncio standard library
@@ -626,7 +626,7 @@ fight over getting the GIL on different CPUs in parallel. Those issues were
 fixed with the new GIL introduced in Python 3.2 and now check gets only called
 every 5ms (it's configurable via sys.setswitchinterval).
 
-# One final Example
+# Multithreading Example
 
 After deciding to write something about the upcoming support of async views in
 Django 3.1, I was looking for a compelling example to show off the benefits of
