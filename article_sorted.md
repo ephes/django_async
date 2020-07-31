@@ -42,9 +42,11 @@ in Python, we also might want to keep using Django.
 
 ## What to Expect from this Article?
 
-1. Small example on how to use async views, middlewares and tests
+1. A small example on how to use async views, middlewares and tests
 2. Why is async such a big deal anyway?
 3. The gory details of multithreading vs async, GIL and other oddities
+
+Estimated read time: 25 minutes
 
 # Part I - Async View Example
 
@@ -174,7 +176,8 @@ concurrently by using `async def`, `async with` and the magic of
 
 ### Compare with Sync View
 
-We can check our hypothesis by adding a plain sync aggregation view to `mysite/views.py`:
+We can check our hypothesis that the responses were collected concurrently by
+adding a plain sync aggregation view to `mysite/views.py`:
 ```python
 def api_aggregated_sync(request):
     s = time.perf_counter()
@@ -251,9 +254,9 @@ view to fail.
 
 In our previous `python manage.py runserver` example the `time.sleep` calls are
 also blocking the threads they are running in. Since the development server is
-running each request in it's own thread (it's multithreaded) the latencies
-didn't add up but are blocking different threads concurrently. Therefore the
-`httpx.get` calls only have to wait for about one second each.
+running each request in it's own thread, because it's a multithreaded server,
+the latencies didn't add up but are blocking different threads concurrently.
+Therefore the `httpx.get` calls only have to wait for about one second each.
 
 If the backend you are sending requests to doesn't support answering those
 requests concurrently, you still have to wait. We can resolve this by allowing
@@ -364,9 +367,9 @@ MIDDLEWARE = [
 ```
 
 You can check with your [async api view](http://localhost:8000/api/) and
-[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) (you now
-really have to increase the number of workers, otherwise you'll run into an
-timeout) that your new middleware works in both cases.
+[sync aggregation view](http://127.0.0.1:8000/api/aggregated/sync/) that your
+new middleware works in both cases. You now really have to increase the number
+of workers, otherwise you'll run into an timeout.
 
 # Part II - Why Async?
 
