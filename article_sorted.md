@@ -269,6 +269,8 @@ your aggregated response time will probably be larger than one second.
 uvicorn --workers 10 mysite.asgi:application
 ```
 
+Note that the `--workers` option wont work under windows.
+
 But uvicorn is a async capable server, why don't we take advantage of this by
 turning our sync api view into an async api view? You also have to move the
 `import asyncio` line to the top of the file, if you haven't done this already:
@@ -683,4 +685,4 @@ and this works also for older Django versions.
 
 # Credits
 
-Thanks to Klaus Bremer and Simon Schliesky for reading drafts of this.
+Thanks to Klaus Bremer, Dominik Geldmacher and Simon Schliesky for reading drafts of this.
