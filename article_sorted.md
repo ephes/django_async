@@ -447,8 +447,8 @@ the `await` keyword to
 concurrently your code runs sequentially just like a normal synchronous program.
 Which means that if you call blocking I/O functions or hog the CPU with long
 running calculations, no other task will get the chance to run. Therefore you
-have to know whether a function you calls other functions that might block. And
-if you are doing I/O that would be awaitable you have to mark your function
+have to know whether a function you call calls other functions that might block.
+And if you are doing I/O that would be awaitable you have to mark your function
 awaitable with `async def`, which is a little bit like writing Python
 [using explicitly enforced typing](https://www.encode.io/articles/python-async-frameworks-beyond-developer-tribalism).
 It's harder because you have to be more precise about what kind of things your
